@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = " rs-cloudbuild-tf-777"
+    bucket = "rs-cloudbuild-tf-777"
     prefix = "env/prod"
   }
 }
