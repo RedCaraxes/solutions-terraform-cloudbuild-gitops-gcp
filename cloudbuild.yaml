@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+options:
+  default_logs_bucket_behavior: REGIONAL_USER_OWNED_BUCKET
 
 
 steps:
