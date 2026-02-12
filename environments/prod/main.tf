@@ -17,6 +17,12 @@ locals {
   env = "prod"
 }
 
+
+locals {
+  env2 = "prod2"
+}
+
+
 provider "google" {
   project = "${var.project}"
 }
@@ -37,4 +43,11 @@ module "firewall" {
   source  = "../../modules/firewall"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
+}
+
+
+module "vpc" {
+  source  = "../../modules/vpc"
+  project = "${var.project}"
+  env     = "${local.env2}"
 }
