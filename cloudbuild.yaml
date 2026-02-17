@@ -2,40 +2,35 @@ options:
   default_logs_bucket_behavior: REGIONAL_USER_OWNED_BUCKET
 
 steps:
-  # 1. Validar el TAG y buscar la carpeta
+  # 1. Extraer variables del TAG
   - name: 'gcr.io/cloud-builders/git'
     id: 'parse-tag'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        # Usamos $$ para que Cloud Build no intente sustituirlo antes de tiempo
         echo "Analizando Tag: $TAG_NAME"
         
-        if [ -z "$TAG_NAME" ]; then
-          echo "ERROR: La variable TAG_NAME está vacía. ¿Estás usando un trigger de TAG?"
-          exit 1
-        fi
-
-        # Extraer partes del TAG (plan#id#ticket#fecha)
-        ACTION=$$(echo "$$TAG_NAME" | awk -F'#' '{print $$1}')
-        PROJECT_ID=$$(echo "$$TAG_NAME" | awk -F'#' '{print $$2}')
+        # Extraemos usando una sintaxis de Bash más robusta para Cloud Build
+        # Usamos export para asegurar que estén disponibles
+        export ACTION=$(echo $TAG_NAME | cut -d'#' -f1)
+        export PROJECT_ID=$(echo $TAG_NAME | cut -d'#' -f2)
         
-        echo "Accion detectada: $$ACTION"
-        echo "Proyecto detectado: $$PROJECT_ID"
+        echo "Accion detectada: ${ACTION}"
+        echo "Proyecto detectado: ${PROJECT_ID}"
 
-        # Lógica de mapeo basada en tu estructura de carpetas real
-        if [[ "$$PROJECT_ID" == *"dev"* || "$$PROJECT_ID" == *"tier-1"* ]]; then
-          FOLDER="environments/dev"
-        elif [[ "$$PROJECT_ID" == *"prod"* ]]; then
-          FOLDER="environments/prod"
+        # Validar que la carpeta exista (asumiendo que están en la raíz o en environments/)
+        # Ajusta esta ruta según donde pongas tus carpetas de proyecto
+        if [ -d "environments/${PROJECT_ID}" ]; then
+          echo "environments/${PROJECT_ID}" > /workspace/tf_folder
+        elif [ -d "${PROJECT_ID}" ]; then
+          echo "${PROJECT_ID}" > /workspace/tf_folder
         else
-          echo "ERROR: No se pudo mapear el ID $$PROJECT_ID a una carpeta."
+          echo "ERROR: No existe la carpeta para ${PROJECT_ID}"
           exit 1
         fi
         
-        echo "$$ACTION" > /workspace/tf_action
-        echo "$$FOLDER" > /workspace/tf_folder
+        echo "${ACTION}" > /workspace/tf_action
 
   # 2. Ejecutar Terraform
   - name: 'hashicorp/terraform'
@@ -44,17 +39,15 @@ steps:
     args:
       - '-c'
       - |
-        # Cargamos las variables guardadas
-        TF_ACTION=$$(cat /workspace/tf_action)
-        TF_FOLDER=$$(cat /workspace/tf_folder)
+        TF_ACTION=$(cat /workspace/tf_action)
+        TF_FOLDER=$(cat /workspace/tf_folder)
         
-        echo "Ubicándose en: $$TF_FOLDER"
-        cd "$$TF_FOLDER"
+        echo "Ejecutando ${TF_ACTION} en ${TF_FOLDER}"
+        cd "${TF_FOLDER}"
         
         terraform init
-        
-        if [ "$$TF_ACTION" == "plan" ]; then
+        if [ "${TF_ACTION}" == "plan" ]; then
           terraform plan
-        elif [ "$$TF_ACTION" == "apply" ]; then
+        elif [ "${TF_ACTION}" == "apply" ]; then
           terraform apply -auto-approve
         fi
