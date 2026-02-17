@@ -1,3 +1,6 @@
+options:
+  default_logs_bucket_behavior: REGIONAL_USER_OWNED_BUCKET
+
 steps:
   # 1. Validar el TAG y buscar el Proyecto en el TXT
   - name: 'gcr.io/cloud-builders/git'
