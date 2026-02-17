@@ -9,30 +9,33 @@ steps:
     args:
       - '-c'
       - |
-        # Usamos variables normales de bash aquí. 
-        # Cloud Build no las toca porque estamos dentro de un bloque 'bash -c'
-        
+        # Usamos $$ para que Cloud Build no intente sustituirlo antes de tiempo
         echo "Analizando Tag: $TAG_NAME"
         
+        if [ -z "$TAG_NAME" ]; then
+          echo "ERROR: La variable TAG_NAME está vacía. ¿Estás usando un trigger de TAG?"
+          exit 1
+        fi
+
         # Extraer partes del TAG (plan#id#ticket#fecha)
-        ACTION=$(echo "$TAG_NAME" | awk -F'#' '{print $1}')
-        PROJECT_ID=$(echo "$TAG_NAME" | awk -F'#' '{print $2}')
+        ACTION=$$(echo "$$TAG_NAME" | awk -F'#' '{print $$1}')
+        PROJECT_ID=$$(echo "$$TAG_NAME" | awk -F'#' '{print $$2}')
         
-        echo "Accion: $ACTION"
-        echo "Proyecto: $PROJECT_ID"
+        echo "Accion detectada: $$ACTION"
+        echo "Proyecto detectado: $$PROJECT_ID"
 
         # Lógica de mapeo basada en tu estructura de carpetas real
-        if [[ "$PROJECT_ID" == *"dev"* || "$PROJECT_ID" == *"tier-1"* ]]; then
+        if [[ "$$PROJECT_ID" == *"dev"* || "$$PROJECT_ID" == *"tier-1"* ]]; then
           FOLDER="environments/dev"
-        elif [[ "$PROJECT_ID" == *"prod"* ]]; then
+        elif [[ "$$PROJECT_ID" == *"prod"* ]]; then
           FOLDER="environments/prod"
         else
-          echo "ERROR: No se pudo mapear el ID $PROJECT_ID a una carpeta existente."
+          echo "ERROR: No se pudo mapear el ID $$PROJECT_ID a una carpeta."
           exit 1
         fi
         
-        echo "$ACTION" > /workspace/tf_action
-        echo "$FOLDER" > /workspace/tf_folder
+        echo "$$ACTION" > /workspace/tf_action
+        echo "$$FOLDER" > /workspace/tf_folder
 
   # 2. Ejecutar Terraform
   - name: 'hashicorp/terraform'
@@ -41,19 +44,17 @@ steps:
     args:
       - '-c'
       - |
-        # Cargamos las variables guardadas en el paso anterior
-        TF_ACTION=$(cat /workspace/tf_action)
-        TF_FOLDER=$(cat /workspace/tf_folder)
+        # Cargamos las variables guardadas
+        TF_ACTION=$$(cat /workspace/tf_action)
+        TF_FOLDER=$$(cat /workspace/tf_folder)
         
-        echo "Cambiando a directorio: $TF_FOLDER"
-        cd "$TF_FOLDER"
+        echo "Ubicándose en: $$TF_FOLDER"
+        cd "$$TF_FOLDER"
         
         terraform init
         
-        if [ "$TF_ACTION" == "plan" ]; then
-          echo "Corriendo Plan..."
+        if [ "$$TF_ACTION" == "plan" ]; then
           terraform plan
-        elif [ "$TF_ACTION" == "apply" ]; then
-          echo "Corriendo Apply..."
+        elif [ "$$TF_ACTION" == "apply" ]; then
           terraform apply -auto-approve
         fi
