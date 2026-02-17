@@ -2,52 +2,58 @@ options:
   default_logs_bucket_behavior: REGIONAL_USER_OWNED_BUCKET
 
 steps:
-  # 1. Validar el TAG y buscar el Proyecto en el TXT
+  # 1. Validar el TAG y buscar la carpeta
   - name: 'gcr.io/cloud-builders/git'
-    id: 'validate-and-locate'
+    id: 'parse-tag'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        # TAG_NAME viene de la variable predeterminada $TAG_NAME de Cloud Build
-        # Formato esperado: accion#projectid#ticket#date
-        echo "Procesando Tag: $TAG_NAME"
+        # Usamos variables normales de bash aquí. 
+        # Cloud Build no las toca porque estamos dentro de un bloque 'bash -c'
         
-        ACTION=$(echo $TAG_NAME | awk -F'#' '{print $1}')
-        PROJECT_ID=$(echo $TAG_NAME | awk -F'#' '{print $2}')
+        echo "Analizando Tag: $TAG_NAME"
         
-        # Buscar el nombre de la carpeta en projects.txt
-        # El formato del txt es: NOMBRE_CARPETA : PROJECT_ID
-        RESULT=$(grep ":.*${PROJECT_ID}.*$" 01_seed_project/02_deployments/projects.txt || true)
+        # Extraer partes del TAG (plan#id#ticket#fecha)
+        ACTION=$(echo "$TAG_NAME" | awk -F'#' '{print $1}')
+        PROJECT_ID=$(echo "$TAG_NAME" | awk -F'#' '{print $2}')
         
-        if [ -z "$RESULT" ]; then
-          echo "ERROR: El Project ID '$PROJECT_ID' no existe en projects.txt"
+        echo "Accion: $ACTION"
+        echo "Proyecto: $PROJECT_ID"
+
+        # Lógica de mapeo basada en tu estructura de carpetas real
+        if [[ "$PROJECT_ID" == *"dev"* || "$PROJECT_ID" == *"tier-1"* ]]; then
+          FOLDER="environments/dev"
+        elif [[ "$PROJECT_ID" == *"prod"* ]]; then
+          FOLDER="environments/prod"
+        else
+          echo "ERROR: No se pudo mapear el ID $PROJECT_ID a una carpeta existente."
           exit 1
         fi
         
-        FOLDER_NAME=$(echo "$RESULT" | awk -F':' '{print $1}' | xargs)
-        echo "Carpeta encontrada: $FOLDER_NAME"
-        
-        # Guardar para los siguientes pasos
         echo "$ACTION" > /workspace/tf_action
-        echo "$FOLDER_NAME" > /workspace/tf_folder
+        echo "$FOLDER" > /workspace/tf_folder
 
-  # 2. Ejecutar Terraform en la carpeta encontrada
+  # 2. Ejecutar Terraform
   - name: 'hashicorp/terraform'
-    id: 'terraform-run'
+    id: 'tf-run'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        ACTION=$(cat /workspace/tf_action)
-        FOLDER=$(cat /workspace/tf_folder)
+        # Cargamos las variables guardadas en el paso anterior
+        TF_ACTION=$(cat /workspace/tf_action)
+        TF_FOLDER=$(cat /workspace/tf_folder)
         
-        # La ruta según tu estructura: 02_deploy_project/NOMBRE_CARPETA
-        cd "02_deploy_project/$FOLDER"
+        echo "Cambiando a directorio: $TF_FOLDER"
+        cd "$TF_FOLDER"
         
         terraform init
-        if [ "$ACTION" == "plan" ]; then
+        
+        if [ "$TF_ACTION" == "plan" ]; then
+          echo "Corriendo Plan..."
           terraform plan
-        elif [ "$ACTION" == "apply" ]; then
+        elif [ "$TF_ACTION" == "apply" ]; then
+          echo "Corriendo Apply..."
           terraform apply -auto-approve
         fi
