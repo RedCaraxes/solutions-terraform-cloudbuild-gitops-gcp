@@ -1,0 +1,50 @@
+steps:
+  # 1. Validar el TAG y buscar el Proyecto en el TXT
+  - name: 'gcr.io/cloud-builders/git'
+    id: 'validate-and-locate'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # TAG_NAME viene de la variable predeterminada $TAG_NAME de Cloud Build
+        # Formato esperado: accion#projectid#ticket#date
+        echo "Procesando Tag: $TAG_NAME"
+        
+        ACTION=$(echo $TAG_NAME | awk -F'#' '{print $1}')
+        PROJECT_ID=$(echo $TAG_NAME | awk -F'#' '{print $2}')
+        
+        # Buscar el nombre de la carpeta en projects.txt
+        # El formato del txt es: NOMBRE_CARPETA : PROJECT_ID
+        RESULT=$(grep ":.*${PROJECT_ID}.*$" 01_seed_project/02_deployments/projects.txt || true)
+        
+        if [ -z "$RESULT" ]; then
+          echo "ERROR: El Project ID '$PROJECT_ID' no existe en projects.txt"
+          exit 1
+        fi
+        
+        FOLDER_NAME=$(echo "$RESULT" | awk -F':' '{print $1}' | xargs)
+        echo "Carpeta encontrada: $FOLDER_NAME"
+        
+        # Guardar para los siguientes pasos
+        echo "$ACTION" > /workspace/tf_action
+        echo "$FOLDER_NAME" > /workspace/tf_folder
+
+  # 2. Ejecutar Terraform en la carpeta encontrada
+  - name: 'hashicorp/terraform'
+    id: 'terraform-run'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        ACTION=$(cat /workspace/tf_action)
+        FOLDER=$(cat /workspace/tf_folder)
+        
+        # La ruta según tu estructura: 02_deploy_project/NOMBRE_CARPETA
+        cd "02_deploy_project/$FOLDER"
+        
+        terraform init
+        if [ "$ACTION" == "plan" ]; then
+          terraform plan
+        elif [ "$ACTION" == "apply" ]; then
+          terraform apply -auto-approve
+        fi
