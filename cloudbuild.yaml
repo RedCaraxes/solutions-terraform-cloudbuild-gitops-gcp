@@ -11,26 +11,24 @@ steps:
       - |
         echo "Analizando Tag: $TAG_NAME"
         
-        # Extraemos usando una sintaxis de Bash más robusta para Cloud Build
-        # Usamos export para asegurar que estén disponibles
-        export ACTION=$(echo $TAG_NAME | cut -d'#' -f1)
-        export PROJECT_ID=$(echo $TAG_NAME | cut -d'#' -f2)
+        # Usamos $$ para que Cloud Build no intente sustituir estas variables
+        export ACTION=$$(echo "$TAG_NAME" | cut -d'#' -f1)
+        export PROJECT_ID=$$(echo "$TAG_NAME" | cut -d'#' -f2)
         
-        echo "Accion detectada: ${ACTION}"
-        echo "Proyecto detectado: ${PROJECT_ID}"
+        echo "Accion detectada: $${ACTION}"
+        echo "Proyecto detectado: $${PROJECT_ID}"
 
-        # Validar que la carpeta exista (asumiendo que están en la raíz o en environments/)
-        # Ajusta esta ruta según donde pongas tus carpetas de proyecto
-        if [ -d "environments/${PROJECT_ID}" ]; then
-          echo "environments/${PROJECT_ID}" > /workspace/tf_folder
-        elif [ -d "${PROJECT_ID}" ]; then
-          echo "${PROJECT_ID}" > /workspace/tf_folder
+        # Validar existencia de la carpeta tras el renombre
+        if [ -d "environments/$${PROJECT_ID}" ]; then
+          echo "environments/$${PROJECT_ID}" > /workspace/tf_folder
+        elif [ -d "$${PROJECT_ID}" ]; then
+          echo "$${PROJECT_ID}" > /workspace/tf_folder
         else
-          echo "ERROR: No existe la carpeta para ${PROJECT_ID}"
+          echo "ERROR: No existe la carpeta para $${PROJECT_ID}"
           exit 1
         fi
         
-        echo "${ACTION}" > /workspace/tf_action
+        echo "$${ACTION}" > /workspace/tf_action
 
   # 2. Ejecutar Terraform
   - name: 'hashicorp/terraform'
@@ -39,15 +37,16 @@ steps:
     args:
       - '-c'
       - |
-        TF_ACTION=$(cat /workspace/tf_action)
-        TF_FOLDER=$(cat /workspace/tf_folder)
+        # Recuperamos los valores del workspace
+        TF_ACTION=$$(cat /workspace/tf_action)
+        TF_FOLDER=$$(cat /workspace/tf_folder)
         
-        echo "Ejecutando ${TF_ACTION} en ${TF_FOLDER}"
-        cd "${TF_FOLDER}"
+        echo "Ejecutando $${TF_ACTION} en $${TF_FOLDER}"
+        cd "$${TF_FOLDER}"
         
         terraform init
-        if [ "${TF_ACTION}" == "plan" ]; then
+        if [ "$${TF_ACTION}" == "plan" ]; then
           terraform plan
-        elif [ "${TF_ACTION}" == "apply" ]; then
+        elif [ "$${TF_ACTION}" == "apply" ]; then
           terraform apply -auto-approve
         fi
