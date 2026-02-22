@@ -14,12 +14,14 @@
 
 
 locals {
-  env = "dev"
+  env = "prod"
 }
 
+
 locals {
-  env2 = "dev2"
+  env2 = "prod2"
 }
+
 
 provider "google" {
   project = "${var.project}"
@@ -31,18 +33,10 @@ module "vpc" {
   env     = "${local.env}"
 }
 
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
 module "firewall" {
   source  = "../../modules/firewall"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
-
-  
 }
 
 module "vpc2" {
@@ -51,5 +45,12 @@ module "vpc2" {
   env     = "${local.env2}"
 }
 
-
-
+module "buckets" {
+  source       = "../modules/Cloud_Storage"
+  for_each     = local.buckets
+  name         = each.key
+  location     = each.value.location
+  storage_class= each.value.storage_class
+  labels       = each.value.labels
+  iam_roles    = each.value.iam_roles
+}
