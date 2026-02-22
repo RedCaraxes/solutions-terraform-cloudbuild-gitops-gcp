@@ -44,7 +44,7 @@ steps:
         echo "Ejecutando $${TF_ACTION} en $${TF_FOLDER}"
         cd "$${TF_FOLDER}"
         
-        terraform init
+        terraform init --upgrade
         if [ "$${TF_ACTION}" == "plan" ]; then
           terraform plan
         elif [ "$${TF_ACTION}" == "apply" ]; then
