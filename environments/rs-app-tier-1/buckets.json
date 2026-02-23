@@ -1,0 +1,18 @@
+{
+  "bucket1": {
+    "location": "us-east1",
+    "storage_class": "NEARLINE",
+    "labels": { "env": "prod", "team": "data" },
+    "iam_roles": [
+      { "role": "roles/storage.objectViewer", "members": ["user:herostorment@gmail.com"] }
+    ]
+  },
+  "bucket2": {
+    "location": "us-west1",
+    "storage_class": "COLDLINE",
+    "labels": { "env": "prod", "team": "analytics" },
+    "iam_roles": [
+      { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
+    ]
+  }
+}

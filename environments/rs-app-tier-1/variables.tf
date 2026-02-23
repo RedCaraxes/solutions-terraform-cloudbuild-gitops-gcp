@@ -13,4 +13,8 @@
 # limitations under the License.
 
 
-variable "project" {}
+variable "project" {
+  description = "ID del proyecto de GCP"
+  type        = string
+  default     = "rs-app-tier-1"
+}
