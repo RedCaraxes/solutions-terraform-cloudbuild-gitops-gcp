@@ -22,11 +22,6 @@ locals {
   env2 = "prod2"
 }
 
-
-provider "google" {
-  project = "${var.project}"
-}
-
 module "vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
