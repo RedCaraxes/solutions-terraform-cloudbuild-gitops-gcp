@@ -1,6 +1,6 @@
 {
   "bucket1": {
-    "location": "us-east1",
+    "location": "us-east4",
     "storage_class": "NEARLINE",
     "labels": { "env": "prod", "team": "data" },
     "iam_roles": [
@@ -8,7 +8,7 @@
     ]
   },
   "bucket2": {
-    "location": "us-west1",
+    "location": "us-east4",
     "storage_class": "COLDLINE",
     "labels": { "env": "prod", "team": "analytics" },
     "iam_roles": [
