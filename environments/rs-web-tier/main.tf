@@ -22,24 +22,6 @@ locals {
   env2 = "prod2"
 }
 
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
-}
-
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "vpc2" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env2}"
-}
-
 module "buckets" {
   source       = "../../modules/Cloud_Storage"
   for_each     = local.buckets
