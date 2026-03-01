@@ -1,6 +1,6 @@
 {
   "bucket_rs_webtier10i901283": {
-    "location": "us-central1",
+    "location": "us-east4",
     "storage_class": "STANDARD",
     "labels": { "env": "prod", "team": "data" },
     "iam_roles": [
@@ -8,7 +8,7 @@
     ]
   },
   "bucket_rs_webtier912837493": {
-    "location": "us-central1",
+    "location": "us-east4",
     "storage_class": "STANDARD",
     "labels": { "env": "prod", "team": "analytics" },
     "iam_roles": [
