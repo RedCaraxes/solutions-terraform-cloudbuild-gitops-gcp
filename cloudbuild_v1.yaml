@@ -6,8 +6,6 @@ steps:
   - name: 'gcr.io/cloud-builders/git'
     id: 'parse-tag'
     entrypoint: 'bash'
-    env:
-      - 'GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=web-tier-tf@rs-web-tier.iam.gserviceaccount.com'
     args:
       - '-c'
       - |
