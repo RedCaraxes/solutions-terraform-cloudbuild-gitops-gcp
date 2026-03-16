@@ -43,7 +43,7 @@ steps:
         echo "$$FINAL_PATH" > /workspace/tf_folder
         echo "$${ACTION}" > /workspace/tf_action
 
-  # 2. Ejecutar Terraform
+# 2. Ejecutar Terraform
   - name: 'hashicorp/terraform'
     id: 'tf-run'
     entrypoint: 'sh'
@@ -52,69 +52,62 @@ steps:
     args:
       - '-c'
       - |
-        # Recuperamos los valores del workspace
         TF_ACTION=$$(cat /workspace/tf_action)
         TF_FOLDER=$$(cat /workspace/tf_folder)
         
-        echo "========================================================="
-        echo "INICIANDO: $${TF_ACTION} en $${TF_FOLDER}"
-        echo "========================================================="
-        cd "$${TF_FOLDER}"
+        echo "---------------------------------------------------------"
+        echo "EJECUTANDO: terraform $${TF_ACTION} en $${TF_FOLDER}"
+        echo "---------------------------------------------------------"
         
-        terraform init --upgrade
-        if [ "$${TF_ACTION}" == "plan" ]; then
-          terraform plan
-        elif [ "$${TF_ACTION}" == "apply" ]; then
-          terraform apply -auto-approve
-        fi
+        cd "$${TF_FOLDER}"
+        terraform init -input=false --upgrade > /dev/null
 
-# 3. Resumen Final de Recursos
+        # Ejecución directa: terraform plan o terraform apply
+        # Usamos -auto-approve siempre, ya que en el plan simplemente se ignora
+        (terraform $${TF_ACTION} -no-color -input=false -auto-approve 2>&1) | tee /workspace/tf_result.log
+
+# 3. Informe Final
   - name: 'bash'
     id: 'tf-summary'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        # Verificación básica de archivos
-        [ ! -f /workspace/tf_action ] && { echo "Error: No se encontro info de la accion"; exit 1; }
-        [ ! -f /workspace/tf_result.log ] && { echo "Error: No se encontro el log de Terraform"; exit 1; }
+        # Sincronización rápida
+        sleep 1
+        LOG_FILE="/workspace/tf_result.log"
+
+        if [ ! -f "$$LOG_FILE" ]; then
+          echo "ERROR: No se genero el log de Terraform en $$LOG_FILE"
+          exit 1
+        fi
 
         TF_ACTION=$$(cat /workspace/tf_action)
-        TF_FOLDER=$$(cat /workspace/tf_folder)
         TF_TICKET=$$(cat /workspace/tf_ticket 2>/dev/null || echo "N/A")
-        LOG_FILE="/workspace/tf_result.log"
+        TF_FOLDER=$$(cat /workspace/tf_folder)
         
         echo "========================================================="
         echo "        INFORME DE EJECUCION: $${TF_TICKET}"
         echo "========================================================="
-        echo " RUTA: $${TF_FOLDER}"
-        echo " ACCION: $${TF_ACTION}"
+        echo " RUTA:    $${TF_FOLDER}"
+        echo " ACCION:  $${TF_ACTION}"
         echo "---------------------------------------------------------"
 
-        # 1. Detectar Errores (Si los hay, mostramos el bloque de error)
+        # 1. Analizar Errores
         if grep -qi "Error:" "$$LOG_FILE"; then
           echo "ESTADO: FALLIDO"
-          echo "DETALLE DEL ERROR:"
+          echo "DETALLE:"
           sed -n '/Error:/,$p' "$$LOG_FILE" | head -n 15
           exit 1
         fi
 
-        # 2. Resumen Inteligente de Recursos
-        echo "CAMBIOS DETECTADOS EN INFRAESTRUCTURA:"
-        
-        # Este grep busca las líneas que Terraform usa para anunciar acciones:
-        # "will be created", "will be destroyed", "Creating...", "Destroying..."
-        grep -E "will be created|will be destroyed|will be updated|Creating\.\.\.|Destroying\.\.\.|Modifying\.\.\." "$$LOG_FILE" \
-          | sed 's/will be//g' \
-          | sed 's/\.\.\.//g' \
-          | sort -u || echo "No se listaron cambios detallados."
+        # 2. Resumen de Cambios (Especial para tus módulos de buckets)
+        echo "CAMBIOS DETECTADOS:"
+        # Captura: "will be created", "Destroying...", "Creating...", etc.
+        grep -E "will be|Creating\.\.\.|Destroying\.\.\.|Modifying\.\.\." "$$LOG_FILE" \
+          | sed 's/will be//g' | sed 's/\.\.\.//g' | sed 's/^[[:space:]]*//' | sort -u || echo "No hay cambios pendientes."
 
         echo "---------------------------------------------------------"
-        
-        # 3. Mostrar la línea de resumen final (Plan o Apply complete)
-        if [ "$${TF_ACTION}" == "plan" ]; then
-          grep "Plan:" "$$LOG_FILE" || echo "Resumen de plan no encontrado."
-        else
-          grep "Apply complete!" "$$LOG_FILE" || echo "Resumen de apply no encontrado."
-        fi
+        # 3. Resultado Final (La línea de Plan: o Apply complete!)
+        grep -E "Plan:|Apply complete!" "$$LOG_FILE" || echo "Operacion finalizada sin resumen."
         echo "========================================================="

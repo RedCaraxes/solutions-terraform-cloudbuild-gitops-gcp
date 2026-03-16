@@ -23,7 +23,15 @@
       { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
     ]
   },
-  "bucket_rs_webtierdomingo0002_new": {
+  "bucket_rs_webtierdomingo0004_new": {
+    "location": "us-east4",
+    "storage_class": "STANDARD",
+    "labels": { "env": "prod", "team": "analytics" },
+    "iam_roles": [
+      { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
+    ]
+  },
+  "bucket_rs_webtierdomingo0003_new": {
     "location": "us-east4",
     "storage_class": "STANDARD",
     "labels": { "env": "prod", "team": "analytics" },
