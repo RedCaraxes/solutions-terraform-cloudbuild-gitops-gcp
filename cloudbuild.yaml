@@ -68,57 +68,53 @@ steps:
           terraform apply -auto-approve
         fi
 
-# 3. Resumen Final de Recursos (Formato Limpio)
+# 3. Resumen Final de Recursos
   - name: 'bash'
     id: 'tf-summary'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        # Verificación básica de archivos
+        [ ! -f /workspace/tf_action ] && { echo "Error: No se encontro info de la accion"; exit 1; }
+        [ ! -f /workspace/tf_result.log ] && { echo "Error: No se encontro el log de Terraform"; exit 1; }
+
         TF_ACTION=$$(cat /workspace/tf_action)
-        TF_TICKET=$$(cat /workspace/tf_ticket)
         TF_FOLDER=$$(cat /workspace/tf_folder)
+        TF_TICKET=$$(cat /workspace/tf_ticket 2>/dev/null || echo "N/A")
         LOG_FILE="/workspace/tf_result.log"
         
         echo "========================================================="
         echo "        INFORME DE EJECUCION: $${TF_TICKET}"
         echo "========================================================="
         echo " RUTA: $${TF_FOLDER}"
+        echo " ACCION: $${TF_ACTION}"
         echo "---------------------------------------------------------"
 
-        # 1. Validacion de Errores
+        # 1. Detectar Errores (Si los hay, mostramos el bloque de error)
         if grep -qi "Error:" "$$LOG_FILE"; then
           echo "ESTADO: FALLIDO"
-          echo "---------------------------------------------------------"
           echo "DETALLE DEL ERROR:"
-          # Extrae desde la primera aparicion de Error hasta el final del archivo
-          sed -n '/Error:/,$p' "$$LOG_FILE" | head -n 20
+          sed -n '/Error:/,$p' "$$LOG_FILE" | head -n 15
           exit 1
         fi
 
-        # 2. Analisis de Cambios segun la Accion
-        if [ "$${TF_ACTION}" == "plan" ]; then
-          echo "ESTADO: PLAN COMPLETADO"
-          echo "---------------------------------------------------------"
-          echo "LISTA DE RECURSOS AFECTADOS:"
-          
-          # Filtro para mostrar solo el nombre del recurso y la accion (+, -, ~)
-          # Excluimos lineas de "known after apply" para no ensuciar el resumen
-          grep -E "resource \".*\" \".*\" \{|^  [+-~] " "$$LOG_FILE" | grep -v "known after apply" || echo "No se detectaron cambios pendientes."
-          
-          echo "---------------------------------------------------------"
-          echo "RESUMEN:"
-          grep "Plan:" "$$LOG_FILE" || echo "Sin cambios."
+        # 2. Resumen Inteligente de Recursos
+        echo "CAMBIOS DETECTADOS EN INFRAESTRUCTURA:"
         
-        elif [ "$${TF_ACTION}" == "apply" ]; then
-          echo "ESTADO: APPLY COMPLETADO"
-          echo "---------------------------------------------------------"
-          echo "RECURSOS PROCESADOS:"
-          
-          # Muestra solo las lineas de progreso de creacion/modificacion/destruccion
-          grep -E "Creating...|Modifying...|Destroying..." "$$LOG_FILE" | sed 's/[:].*//'
-          
-          echo "---------------------------------------------------------"
-          grep "Apply complete!" "$$LOG_FILE"
+        # Este grep busca las líneas que Terraform usa para anunciar acciones:
+        # "will be created", "will be destroyed", "Creating...", "Destroying..."
+        grep -E "will be created|will be destroyed|will be updated|Creating\.\.\.|Destroying\.\.\.|Modifying\.\.\." "$$LOG_FILE" \
+          | sed 's/will be//g' \
+          | sed 's/\.\.\.//g' \
+          | sort -u || echo "No se listaron cambios detallados."
+
+        echo "---------------------------------------------------------"
+        
+        # 3. Mostrar la línea de resumen final (Plan o Apply complete)
+        if [ "$${TF_ACTION}" == "plan" ]; then
+          grep "Plan:" "$$LOG_FILE" || echo "Resumen de plan no encontrado."
+        else
+          grep "Apply complete!" "$$LOG_FILE" || echo "Resumen de apply no encontrado."
         fi
         echo "========================================================="
