@@ -22,6 +22,14 @@
     "iam_roles": [
       { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
     ]
+  },
+  "bucket_rs_webtierdomingo0001_new": {
+    "location": "us-east4",
+    "storage_class": "STANDARD",
+    "labels": { "env": "prod", "team": "analytics" },
+    "iam_roles": [
+      { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
+    ]
   }
 }
 
