@@ -1,0 +1,11 @@
+{
+  "bucket_rs_webtier10i92313": {
+    "location": "us-east4",
+    "storage_class": "STANDARD",
+    "labels": { "env": "dev", "team": "testing" },
+    "iam_roles": [
+      { "role": "roles/storage.objectViewer", "members": ["user:herostorment@gmail.com"] }
+    ]
+  }
+}
+
