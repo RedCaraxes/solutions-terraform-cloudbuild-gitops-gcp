@@ -40,6 +40,19 @@ steps:
         echo "$${ACTION}" > /workspace/tf_action
         echo "$${TICKET}" > /workspace/tf_ticket
 
+# 2. Escaneo de Seguridad (Checkov)
+  - name: 'bridgecrew/checkov:latest'
+    id: 'security-scan'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        TF_FOLDER=$$(cat /workspace/tf_folder)
+        echo ">>> Escaneando seguridad en: $${TF_FOLDER}"
+        # --soft-fail: Permite que el pipeline siga aunque encuentre errores (opcional)
+        # Quita --soft-fail si quieres que el pipeline se DETENGA ante cualquier riesgo
+        checkov -d "$${TF_FOLDER}" --framework terraform --compact
+
 # 2. Ejecutar Terraform
   - name: 'hashicorp/terraform'
     id: 'tf-run'
@@ -51,13 +64,17 @@ steps:
       - |
         TF_ACTION=$$(cat /workspace/tf_action)
         TF_FOLDER=$$(cat /workspace/tf_folder)
-        
+        cd "$${TF_FOLDER}"
+
+        echo ">>> Iniciando Terraform en: $${TF_FOLDER}"
+        terraform init -input=false --upgrade > /dev/null
+
+        echo ">>> Validando configuracion (validate)..."
+        terraform validate
+
         echo "---------------------------------------------------------"
         echo "EJECUTANDO: terraform $${TF_ACTION} en $${TF_FOLDER}"
         echo "---------------------------------------------------------"
-        
-        cd "$${TF_FOLDER}"
-        terraform init -input=false --upgrade > /dev/null
 
         # Definimos los flags extras: si es apply, agregamos -auto-approve
         EXTRA_FLAGS=""
