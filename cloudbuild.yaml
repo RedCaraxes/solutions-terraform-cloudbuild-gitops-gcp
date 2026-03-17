@@ -31,10 +31,6 @@ steps:
           fi
         done
 
-        if [ -z "$$FINAL_PATH" ] && [ -d "$${PROJECT_ID}" ]; then
-          FINAL_PATH="$${PROJECT_ID}"
-        fi
-
         if [ -z "$$FINAL_PATH" ]; then
           echo "ERROR: Carpeta no encontrada para $${PROJECT_ID}"
           exit 1
@@ -42,6 +38,7 @@ steps:
 
         echo "$$FINAL_PATH" > /workspace/tf_folder
         echo "$${ACTION}" > /workspace/tf_action
+        echo "$${TICKET}" > /workspace/tf_ticket
 
 # 2. Ejecutar Terraform
   - name: 'hashicorp/terraform'
