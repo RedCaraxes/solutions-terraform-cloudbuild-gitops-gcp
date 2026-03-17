@@ -17,7 +17,7 @@ DATE=$(date +"%Y%m%d%H%M")
 FULL_TAG="${TAG_INFO}#${TICKET}#${DATE}"
 
 # 2. Localizar ambiente y carpeta
-POSIBLES_AMBIENTES=("Projects" "Security" "Networking")
+POSIBLES_AMBIENTES=("Projects Production" "Projects Development" "Projects Networking" "Projects Security y Organizations")
 TARGET_DIR=""
 AMBIENTE_DETECTADO="Raiz (Desconocido)"
 

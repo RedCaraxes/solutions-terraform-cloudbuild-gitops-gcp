@@ -23,7 +23,7 @@ steps:
         echo "Accion: $${ACTION} | Proyecto: $${PROJECT_ID}"
 
         FINAL_PATH=""
-        for folder in Projects Security Networking; do
+        for folder in "Projects Production" "Projects Development" "Projects Networking" "Projects Security y Organizations"; do
           if [ -d "$$folder/$${PROJECT_ID}" ]; then
             FINAL_PATH="$$folder/$${PROJECT_ID}"
             echo "Ambiente detectado: $$folder"
