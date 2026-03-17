@@ -59,7 +59,21 @@ echo " TICKET:     $TICKET"
 echo " TAG:        $FULL_TAG"
 echo "========================================================="
 
-git status --short
+# --- INSPECCIÓN DE ESTADO PRE-DESPLIEGUE ---
+if git diff --cached --quiet; then
+    if [ "$ACCION" == "apply" ]; then
+        echo ">>> ESTADO: SIN CAMBIOS LOCALES NUEVOS"
+        echo ">>> REVISIÓN DE ÚLTIMO COMMIT DISPONIBLE (BASE PARA APPLY):"
+        echo "---------------------------------------------------------"
+        git log -1 --name-status --oneline || echo "Aviso: No se pudo leer el historial de Git."
+    else
+        echo ">>> ESTADO: LISTO PARA EJECUTAR PLAN (SIN CAMBIOS PENDIENTES)"
+    fi
+else
+    echo ">>> CAMBIOS DETECTADOS PARA CONFIRMAR Y SUBIR:"
+    git status --short
+fi
+# -------------------------------------------
 
 echo "---------------------------------------------------------"
 read -p "¿Confirmas el despliegue con alcance [$SCOPE]? (s/n): " confirm
