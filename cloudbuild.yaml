@@ -62,9 +62,14 @@ steps:
         cd "$${TF_FOLDER}"
         terraform init -input=false --upgrade > /dev/null
 
-        # Ejecución directa: terraform plan o terraform apply
-        # Usamos -auto-approve siempre, ya que en el plan simplemente se ignora
-        (terraform $${TF_ACTION} -no-color -input=false -auto-approve 2>&1) | tee /workspace/tf_result.log
+        # Definimos los flags extras: si es apply, agregamos -auto-approve
+        EXTRA_FLAGS=""
+        if [ "$${TF_ACTION}" == "apply" ]; then
+          EXTRA_FLAGS="-auto-approve"
+        fi
+
+        # Ejecución corregida
+        (terraform $${TF_ACTION} -no-color -input=false $${EXTRA_FLAGS} 2>&1) | tee /workspace/tf_result.log
 
 # 3. Informe Final
   - name: 'bash'
