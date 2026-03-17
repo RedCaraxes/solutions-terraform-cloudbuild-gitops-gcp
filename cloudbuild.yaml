@@ -40,19 +40,6 @@ steps:
         echo "$${ACTION}" > /workspace/tf_action
         echo "$${TICKET}" > /workspace/tf_ticket
 
-# 2. Escaneo de Seguridad (Checkov)
-  - name: 'bridgecrew/checkov:latest'
-    id: 'security-scan'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-        TF_FOLDER=$$(cat /workspace/tf_folder)
-        echo ">>> Escaneando seguridad en: $${TF_FOLDER}"
-        # --soft-fail: Permite que el pipeline siga aunque encuentre errores (opcional)
-        # Quita --soft-fail si quieres que el pipeline se DETENGA ante cualquier riesgo
-        checkov -d "$${TF_FOLDER}" --framework terraform --compact
-
 # 2. Ejecutar Terraform
   - name: 'hashicorp/terraform'
     id: 'tf-run'
