@@ -9,14 +9,14 @@ fi
 
 TAG_INFO="$1" 
 TICKET="$2"
-MODE="$3" # Captura el tercer argumento si existe
+MODE="$3"
 
 ACCION=$(echo "$TAG_INFO" | cut -d'#' -f1)
 PROJECT_ID=$(echo "$TAG_INFO" | cut -d'#' -f2)
 DATE=$(date +"%Y%m%d%H%M")
 FULL_TAG="${TAG_INFO}#${TICKET}#${DATE}"
 
-# 2. Localizar ambiente y carpeta (solo para el resumen, a menos que sea --all)
+# 2. Localizar ambiente y carpeta
 POSIBLES_AMBIENTES=("Projects" "Security" "Networking")
 TARGET_DIR=""
 AMBIENTE_DETECTADO="Raiz (Desconocido)"
@@ -33,9 +33,8 @@ if [ -z "$TARGET_DIR" ] && [ -d "$PROJECT_ID" ]; then
     TARGET_DIR="$PROJECT_ID"
 fi
 
-# Validar si existe la carpeta (incluso en modo --all, necesitamos un proyecto vaildo para el Tag)
 if [ -z "$TARGET_DIR" ]; then
-    echo "ERROR: No existe la carpeta para '$PROJECT_ID'. El Tag requiere un proyecto valido."
+    echo "ERROR: No existe la carpeta para '$PROJECT_ID'."
     exit 1
 fi
 
@@ -60,7 +59,6 @@ echo " TICKET:     $TICKET"
 echo " TAG:        $FULL_TAG"
 echo "========================================================="
 
-# Mostrar estado de lo que se añadio
 git status --short
 
 echo "---------------------------------------------------------"
@@ -72,19 +70,17 @@ if [[ ! "$confirm" =~ ^[Ss]$ ]]; then
     exit 0
 fi
 
-# 5. Commit y Push
+# 5. Commit y Push (Con visualización de historial para Apply)
 if git diff --cached --quiet; then
     echo "No hay cambios locales nuevos detectados."
     
-    # Solo mostramos info extra si es un apply y no hay cambios nuevos
     if [ "$ACCION" == "apply" ]; then
         echo "---------------------------------------------------------"
-        echo ">>> INFO: Verificando cambios del commit anterior (Plan):"
-        # Usamos || true para que si falla el log, el script no se detenga (por el set -e)
-        git log -1 --name-status --oneline || echo "No se pudo recuperar el historial."
+        echo ">>> REVISANDO CAMBIOS YA CONFIRMADOS (PLAN ANTERIOR):"
+        # El '|| true' evita que el script muera si el log falla
+        git log -1 --name-status --oneline || true
         echo "---------------------------------------------------------"
     fi
-    
     echo "Solo se subira el Tag."
 else
     echo "Confirmando nuevos cambios locales..."
@@ -92,7 +88,8 @@ else
     git push origin $(git symbolic-ref --short HEAD)
 fi
 
-# 6. Taggear y subir
+# 6. Taggear y subir (ESTO ACTIVA LOS TRIGGERS)
+# No mover ni borrar estas líneas
 git tag -a "$FULL_TAG" -m "Ticket: $TICKET | Scope: $SCOPE"
 git push origin --tags
 
