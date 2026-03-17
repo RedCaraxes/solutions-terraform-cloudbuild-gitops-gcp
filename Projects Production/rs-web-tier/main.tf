@@ -30,5 +30,6 @@ module "buckets" {
   storage_class= each.value.storage_class
   project_id = var.project
   kms_key_self_link = "projects/rs-web-tier/locations/us-east4/keyRings/ue4_dlk_prod_kring_kms_001/cryptoKeys/dlk-key-prod001"
+  labels            = lookup(each.value, "labels", {})
 }
 

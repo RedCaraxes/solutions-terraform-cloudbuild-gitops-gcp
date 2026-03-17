@@ -6,6 +6,15 @@ resource "google_storage_bucket" "bucket" {
   storage_class               = var.storage_class
   uniform_bucket_level_access = true
   public_access_prevention    = "enforced"
+  labels                      = var.labels
+
+  versioning {
+    enabled = var.versioning_enabled
+  }
+
+  soft_delete_policy {
+    retention_duration_seconds = var.soft_delete_retention_time
+  }
 
   # Bloque estático: Ahora es OBLIGATORIO
   encryption {
@@ -24,6 +33,10 @@ resource "google_storage_bucket" "bucket" {
       }
     }
   }
-}
 
-####ignorar cambios de tag
+  lifecycle {
+    ignore_changes = [
+      labels,
+    ]
+  }
+}

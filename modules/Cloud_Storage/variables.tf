@@ -22,6 +22,24 @@ variable "storage_class" {
   default = "STANDARD" 
 }
 
+variable "versioning_enabled" {
+  description = "Activa o desactiva el versionamiento de objetos en el bucket."
+  type        = bool
+  default     = false
+}
+
+variable "soft_delete_retention_time" {
+  description = "Duración en segundos de la política de soft delete. El valor 0 deshabilita la característica."
+  type        = number
+  default     = 0
+}
+
+variable "labels" {
+  description = "Un mapa de etiquetas (clave-valor) para asignar al bucket."
+  type        = map(string)
+  default     = {}
+}
+
 variable "lifecycle_rules" {
   type = list(object({
     action_type   = string
