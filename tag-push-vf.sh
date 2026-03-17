@@ -74,14 +74,20 @@ fi
 
 # 5. Commit y Push
 if git diff --cached --quiet; then
-    echo "No hay cambios detectados. Solo se subira el Tag."
+    echo "No hay cambios locales nuevos detectados."
+    
+    # NUEVA LÓGICA: Si es un Apply, mostrar qué se va a desplegar basado en el historial
+    if [ "$ACCION" == "apply" ]; then
+        echo "---------------------------------------------------------"
+        echo ">>> REVISANDO CAMBIOS YA CONFIRMADOS (PLAN ANTERIOR):"
+        # Muestra los archivos cambiados en el último commit
+        git log -1 --name-status --oneline
+        echo "---------------------------------------------------------"
+    fi
+    
+    echo "Solo se subira el Tag."
 else
+    echo "Confirmando nuevos cambios locales..."
     git commit -m "Deploy $TICKET: $PROJECT_ID | Modo: ${MODE:-Selective}"
     git push origin $(git symbolic-ref --short HEAD)
 fi
-
-# 6. Taggear y subir
-git tag -a "$FULL_TAG" -m "Ticket: $TICKET | Scope: $SCOPE"
-git push origin --tags
-
-echo "===== Tag $FULL_TAG enviado con exito ====="
