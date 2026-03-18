@@ -30,6 +30,7 @@ variable "network_name" {
 
 variable "auto_create_subnetworks" {
   description = "automatic creation on subnetworks"
-  type = string
+  type = bool
+  default = false
 }
 

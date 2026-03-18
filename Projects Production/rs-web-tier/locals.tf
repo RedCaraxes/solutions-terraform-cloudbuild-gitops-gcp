@@ -5,3 +5,7 @@ locals {
 locals {
   keyrings = jsondecode(file("${path.module}/config/keyrings.json"))
 }
+
+locals {
+  networks = jsondecode(file("${path.module}/config/networks.json"))
+}

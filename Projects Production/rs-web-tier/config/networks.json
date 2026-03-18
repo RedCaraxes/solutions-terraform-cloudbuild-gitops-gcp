@@ -1,0 +1,8 @@
+{"uc1-network-prod-001":{
+"auto_create_subnetworks":"false",
+"subnetwork_name":"uc1-subnetwork-prod-001",
+  "ip_cidr_range" : "10.10.0.0/16",
+  "secondary_ip_cidr_range" : "192.168.10.0/24",
+  "secondary_ip_range_name" : "ip-secrange-001"
+}
+}
