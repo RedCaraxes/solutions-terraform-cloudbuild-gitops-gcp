@@ -7,5 +7,6 @@
       { "role": "roles/storage.objectViewer", "members": ["user:herostorment@gmail.com"] }
     ]
   }
+  
 }
 
