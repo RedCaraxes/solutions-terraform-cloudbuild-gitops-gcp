@@ -12,16 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-locals {
-  env = "prod"
-}
-
-
-locals {
-  env2 = "prod2"
-}
-
 module "buckets" {
   source       = "../../modules/Cloud_Storage"
   for_each     = local.buckets
@@ -34,11 +24,17 @@ module "buckets" {
 }
 
 module "kms_keyrings" {
-  source   = "../../modules/key_management" # Ajusta según el nombre de tu carpeta
+  source   = "../../modules/key_management"
   for_each = local.keyrings
 
-  project_id   = var.project # El ID que viene del TAG
+  project_id   = var.project
   location     = each.value.location
   keyring_name = each.key
   keys         = each.value.keys
+}
+
+module "network" {
+  source = "../../modules/Network"
+  for_each = local.network
+  network_name = each.key
 }

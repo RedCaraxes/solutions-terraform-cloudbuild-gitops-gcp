@@ -22,3 +22,12 @@ variable "keys" {
     labels          = optional(map(string), {})
   }))
 }
+
+variable "keyring_iam_members" {
+  description = "IAM members for the KMS key ring"
+  type = map(object({
+    role   = string
+    member = string
+  }))
+  default = {}
+}
