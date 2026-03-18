@@ -36,10 +36,8 @@ module "kms_keyrings" {
 module "network" {
   source = "../../modules/Network"
   for_each = local.networks
-  network_name = each.key
+
+  network_name            = each.key
   auto_create_subnetworks = each.value.auto_create_subnetworks
-  subnetwork_name = each.value.subnets
-  ip_cidr_range = each.value.ip_cidr_range
-  secondary_ip_cidr_range = each.value.secondary_ip_cidr_range
-  secondary_ip_range_name = each.value.secondary_ip_range_name
+  subnets                 = each.value.subnets
 }
