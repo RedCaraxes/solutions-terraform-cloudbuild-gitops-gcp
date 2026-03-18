@@ -38,7 +38,7 @@ module "network" {
   for_each = local.networks
   network_name = each.key
   auto_create_subnetworks = each.value.auto_create_subnetworks
-  subnetwork_name = each.value.subnetwork_name
+  subnetwork_name = each.value.subnets
   ip_cidr_range = each.value.ip_cidr_range
   secondary_ip_cidr_range = each.value.secondary_ip_cidr_range
   secondary_ip_range_name = each.value.secondary_ip_range_name
