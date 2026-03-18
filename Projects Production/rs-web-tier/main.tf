@@ -33,3 +33,12 @@ module "buckets" {
   labels            = lookup(each.value, "labels", {})
 }
 
+module "kms_keyrings" {
+  source   = "../../modules/key_management" # Ajusta según el nombre de tu carpeta
+  for_each = local.keyrings
+
+  project_id   = var.project # El ID que viene del TAG
+  location     = each.value.location
+  keyring_name = each.key
+  keys         = each.value.keys
+}

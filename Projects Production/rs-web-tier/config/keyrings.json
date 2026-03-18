@@ -1,0 +1,13 @@
+{
+  "keyrings": {
+    "uc1_dlk_prod_kring_kms_002": {
+      "location": "us-central1",
+      "keys": {
+        "dlk-key-prod001": {
+          "rotation_period": "7776000s",
+          "labels": { "team": "data" }
+        }
+      }
+    }
+  }
+}
