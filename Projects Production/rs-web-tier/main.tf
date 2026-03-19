@@ -41,3 +41,21 @@ module "network" {
   auto_create_subnetworks = each.value.auto_create_subnetworks
   subnets                 = each.value.subnets
 }
+
+module "network_router" {
+  source       = "../../modules/cloud_router"
+  for_each = local.routers
+  project_id   = var.project
+  region       = each.value.region
+  network_id   = module.vpc.network_id
+  router_name  = each.key
+}
+
+module "network_nat" {
+  source      = "../../modules/cloud_nat"
+  for_each = local.nats
+  project_id  = var.project
+  region      = each.value.region
+  router_name = each.value.router_name
+  nat_name    = each.key
+}

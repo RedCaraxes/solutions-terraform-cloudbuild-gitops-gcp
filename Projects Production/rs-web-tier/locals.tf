@@ -9,3 +9,11 @@ locals {
 locals {
   networks = jsondecode(file("${path.module}/config/networks.json"))
 }
+
+locals {
+  routers = jsondecode(file("${path.module}/config/routers.json"))
+}
+
+locals {
+  nats = jsondecode(file("${path.module}/config/nats.json"))
+}
