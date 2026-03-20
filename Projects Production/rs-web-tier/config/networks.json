@@ -24,5 +24,24 @@
         }
       }
     }
+  },
+  "uc2-network-prod-001": {
+    "auto_create_subnetworks": false,
+    "subnets": {
+      "uc2-subnetwork-prod-001": {
+        "location": "us-central2",
+        "ip_cidr_range": "10.50.0.0/16",
+        "secondary_ip_ranges": {
+          "ip-secrange-001": "192.168.50.0/24"
+        }
+      },
+      "uc2-subnetwork-prod-002": {
+        "location": "us-central2",
+        "ip_cidr_range": "10.60.0.0/16",
+        "secondary_ip_ranges": {
+          "ip-secrange-002": "192.168.60.0/24"
+        }
+      }
+    }
   }
 }

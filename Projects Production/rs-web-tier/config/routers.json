@@ -3,5 +3,11 @@
     "region": "us-central1",
     "network_id": "uc1-network-prod-001",
     "labels": { "env": "prod", "team": "data" }
+  },
+  "router002": {
+    "region": "us-central2",
+    "network_id": "uc2-network-prod-001",
+    "labels": { "env": "prod", "team": "data" }
   }
 }
+

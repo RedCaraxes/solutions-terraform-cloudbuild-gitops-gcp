@@ -2,6 +2,27 @@
   "nat001": {
     "region": "us-central1",
     "router_name": "router001",
-    "labels": { "env": "prod", "team": "data" }
+    "labels": {
+      "env": "prod",
+      "team": "data"
+    }
+  },
+  "nat002": {
+    "region": "us-central2",
+    "router_name": "router002",
+    "subnetworks": [
+      {
+        "name": "uc2-subnetwork-prod-001",
+        "source_ip_ranges_to_nat": ["ALL_IP_RANGES"]
+      },
+      {
+        "name": "uc2-subnetwork-prod-002",
+        "source_ip_ranges_to_nat": ["ALL_IP_RANGES"]
+      }
+    ],
+    "labels": {
+      "env": "prod",
+      "team": "data"
+    }
   }
 }

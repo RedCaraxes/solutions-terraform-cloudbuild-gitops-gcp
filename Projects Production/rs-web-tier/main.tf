@@ -57,4 +57,5 @@ module "network_nat" {
   region      = each.value.region
   router_name = each.value.router_name
   nat_name    = each.key
+  subnetworks = each.value.subnetworks
 }
