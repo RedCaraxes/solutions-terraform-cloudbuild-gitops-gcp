@@ -58,4 +58,5 @@ module "network_nat" {
   router_name = each.value.router_name
   nat_name    = each.key
   subnetworks = lookup(each.value, "subnetworks", [])
+  source_subnetwork_ip_ranges_to_nat = each.value.source_subnetwork_ip_ranges_to_nat
 }
