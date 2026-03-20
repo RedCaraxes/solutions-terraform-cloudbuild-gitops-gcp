@@ -1,9 +1,9 @@
 variable "project_id" {
-  type        = string
+  type = string
 }
 
 variable "region" {
-  type        = string
+  type    = string
   default = "us-central1"
 }
 
@@ -24,18 +24,17 @@ variable "log_filter" {
 }
 
 variable "nat_ip_allocate_option" {
-  type = string
-  default = "AUTO_ONLY"
+  type        = string
+  default     = "AUTO_ONLY"
   description = "Opciones: MANUAL_ONLY, AUTO_ONLY"
 }
 
 variable "source_subnetwork_ip_ranges_to_nat" {
-  type    = string
-  default = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+  type        = string
+  default     = "ALL_SUBNETWORKS_ALL_IP_RANGES"
   description = "ALL_SUBNETWORKS_ALL_IP_RANGES o LIST_OF_SUBNETWORKS"
 }
 
-# 🔹 Logging
 variable "enable_logging" {
   type    = bool
   default = false

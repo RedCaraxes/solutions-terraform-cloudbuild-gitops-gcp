@@ -9,17 +9,17 @@ variable "kms_key_self_link" {
   }
 }
 
-variable "bucket_name"   { type = string }
-variable "project_id"    { type = string }
+variable "bucket_name" { type = string }
+variable "project_id" { type = string }
 
-variable "location" { 
+variable "location" {
   type    = string
-  default = "us-central1" 
+  default = "us-central1"
 }
 
-variable "storage_class" { 
+variable "storage_class" {
   type    = string
-  default = "STANDARD" 
+  default = "STANDARD"
 }
 
 variable "versioning_enabled" {
