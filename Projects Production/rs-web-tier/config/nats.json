@@ -1,7 +1,7 @@
 {
-  "nat_001": {
+  "nat001": {
     "region": "us-central1",
-    "router_name": "router_001",
+    "router_name": "router001",
     "labels": { "env": "prod", "team": "data" }
   }
 }
