@@ -5,7 +5,7 @@
     "labels": { "env": "prod", "team": "data" }
   },
   "router002": {
-    "region": "us-central2",
+    "region": "us-east4",
     "network_id": "uc2-network-prod-001",
     "labels": { "env": "prod", "team": "data" }
   }
