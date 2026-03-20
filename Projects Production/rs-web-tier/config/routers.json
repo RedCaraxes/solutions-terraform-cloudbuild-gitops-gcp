@@ -2,12 +2,12 @@
   "router001": {
     "region": "us-central1",
     "network_id": "uc1-network-prod-001",
-    "labels": { "env": "prod", "team": "data" }
+    "asn_number": "64514"
   },
   "router002": {
     "region": "us-east4",
     "network_id": "uc2-network-prod-001",
-    "labels": { "env": "prod", "team": "data" }
+    "asn_number": "64515"
   }
 }
 

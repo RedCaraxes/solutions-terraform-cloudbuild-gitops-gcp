@@ -48,6 +48,7 @@ module "network_router" {
   region       = each.value.region
   network_id   = each.value.network_id
   router_name  = each.key
+  asn = each.value.asn_number
 }
 
 module "network_nat" {

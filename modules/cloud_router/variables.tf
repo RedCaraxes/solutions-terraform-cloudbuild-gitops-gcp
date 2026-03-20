@@ -21,6 +21,5 @@ variable "router_name" {
 
 variable "asn" {
   type        = number
-  default     = 64514
   description = "Local ASN para BGP (64512-65534)"
 }
