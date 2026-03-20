@@ -47,7 +47,7 @@ module "network_router" {
   for_each = local.routers
   project_id   = var.project
   region       = each.value.region
-  network_id   = module.network.network_id
+  network_id   = each.value.network_id
   router_name  = each.key
 }
 
