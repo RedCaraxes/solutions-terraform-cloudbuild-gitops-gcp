@@ -3,7 +3,7 @@ resource "google_compute_subnetwork" "subnets" {
 
   name          = each.key
   ip_cidr_range = each.value.ip_cidr_range
-  region        = var.location
+  region        = var.value.location
   network       = google_compute_network.network_vpc.id
 
   dynamic "secondary_ip_range" {

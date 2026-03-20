@@ -18,7 +18,6 @@ variable "subnets" {
   description = "Subnets map"
   type = map(object({
     location = string
-    name = string
     ip_cidr_range = string
     secondary_ip_ranges = map(string)
   }))

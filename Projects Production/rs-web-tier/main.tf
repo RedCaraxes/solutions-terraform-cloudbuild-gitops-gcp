@@ -36,7 +36,6 @@ module "kms_keyrings" {
 module "network" {
   source = "../../modules/Network"
   for_each = local.networks
-  location = each.value.location
   network_name            = each.key
   auto_create_subnetworks = each.value.auto_create_subnetworks
   subnets                 = each.value.subnets
