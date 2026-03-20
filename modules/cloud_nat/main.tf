@@ -9,7 +9,7 @@ resource "google_compute_router_nat" "nat_public" {
   
   # IMPORTANTE: Esto permite que TODAS las subredes de la Shared VPC 
   # en esta región usen el NAT, incluyendo las de proyectos de servicio.
-  source_subnetwork_ip_ranges_to_nat = var.source_subnetwork_ip_ranges_to_nat
+  source_subnetwork_ip_ranges_to_nat = each.value.source_subnetwork_ip_ranges_to_nat
 
   dynamic "log_config" {
     for_each = var.enable_logging ? [1] : []
