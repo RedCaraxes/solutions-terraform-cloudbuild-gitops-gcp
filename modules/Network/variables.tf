@@ -1,6 +1,6 @@
 variable "location" { 
   type    = string
-  default = "US-EAST1" 
+  default = "us-central1" 
 }
 
 variable "network_name" {

@@ -1,7 +1,7 @@
 {
   "router001": {
     "region": "us-central1",
-    "network_id": "uc1-network-prod-002",
+    "network_id": "uc1-network-prod-001",
     "labels": { "env": "prod", "team": "data" }
   }
 }

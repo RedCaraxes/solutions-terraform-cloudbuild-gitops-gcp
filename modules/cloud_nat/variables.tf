@@ -4,7 +4,7 @@ variable "project_id" {
 
 variable "region" {
   type        = string
-  default = "US-EAST1"
+  default = "us-central1"
 }
 
 variable "router_name" {
@@ -21,4 +21,13 @@ variable "log_filter" {
   type        = string
   default     = "ERRORS_ONLY"
   description = "Opciones: ERRORS_ONLY, TRANSLATIONS_ONLY, ALL"
+}
+
+variable "labels" {
+  type        = map(string)
+  description = "Etiquetas para el recurso NAT"
+  default     = {
+    env      = "prod"
+    managed_by = "terraform"
+  }
 }

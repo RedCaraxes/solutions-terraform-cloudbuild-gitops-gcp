@@ -1,20 +1,23 @@
 {
   "uc1-network-prod-001": {
-    "auto_create_subnetworks": "false",
+    "auto_create_subnetworks": false,
     "subnets": {
       "uc1-subnetwork-prod-001": {
+        "region": "us-central1",
         "ip_cidr_range": "10.10.0.0/16",
         "secondary_ip_ranges": {
           "ip-secrange-001": "192.168.10.0/24"
         }
       },
       "uc1-subnetwork-prod-002": {
+        "region": "us-central1",
         "ip_cidr_range": "10.20.0.0/16",
         "secondary_ip_ranges": {
           "ip-secrange-002": "192.168.20.0/24"
         }
       },
       "uc1-subnetwork-prod-003": {
+        "region": "us-central1",
         "ip_cidr_range": "10.30.0.0/16",
         "secondary_ip_ranges": {
           "ip-secrange-003": "192.168.30.0/24"

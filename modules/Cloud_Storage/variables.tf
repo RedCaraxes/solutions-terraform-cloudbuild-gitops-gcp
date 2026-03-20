@@ -14,7 +14,7 @@ variable "project_id"    { type = string }
 
 variable "location" { 
   type    = string
-  default = "US-EAST1" 
+  default = "us-central1" 
 }
 
 variable "storage_class" { 
