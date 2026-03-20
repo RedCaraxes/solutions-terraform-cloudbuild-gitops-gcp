@@ -1,9 +1,9 @@
 variable "project_id" {
-  type        = string
+  type = string
 }
 
 variable "region" {
-  type        = string
+  type    = string
   default = "us-central1"
 }
 
@@ -17,17 +17,50 @@ variable "nat_name" {
   description = "Nombre único para el recurso NAT"
 }
 
-variable "log_filter" {
+# NAT behavior
+variable "nat_ip_allocate_option" {
   type        = string
-  default     = "ERRORS_ONLY"
-  description = "Opciones: ERRORS_ONLY, TRANSLATIONS_ONLY, ALL"
+  description = "AUTO_ONLY o MANUAL_ONLY"
+  default     = "AUTO_ONLY"
 }
 
-variable "labels" {
-  type        = map(string)
-  description = "Etiquetas para el recurso NAT"
-  default     = {
-    env      = "prod"
-    managed_by = "terraform"
-  }
+variable "source_subnetwork_ip_ranges_to_nat" {
+  type        = string
+  description = "ALL_SUBNETWORKS_ALL_IP_RANGES o LIST_OF_SUBNETWORKS"
+  default     = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+}
+
+# Logging
+variable "enable_logging" {
+  type        = bool
+  description = "Habilitar logs de NAT"
+  default     = false
+}
+
+variable "log_filter" {
+  type        = string
+  description = "ERRORS_ONLY, TRANSLATIONS_ONLY, ALL"
+  default     = "ERRORS_ONLY"
+}
+
+# Subnetworks (modo granular)
+variable "subnetworks" {
+  description = "Lista de subredes para NAT granular"
+  type = list(object({
+    name                     = string
+    source_ip_ranges_to_nat  = list(string)
+    secondary_ip_range_names = optional(list(string))
+  }))
+  default = []
+}
+
+# Timeouts
+variable "tcp_established_idle_timeout_sec" {
+  type    = number
+  default = 1200
+}
+
+variable "tcp_transitory_idle_timeout_sec" {
+  type    = number
+  default = 30
 }
