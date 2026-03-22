@@ -30,5 +30,8 @@
         "member": "user:herostorment@gmail.com"
       }
     }
+  },
+  "uc1_dlk_prod_kring_kms_003": {
+    "location": "us-central1"
   }
 }
