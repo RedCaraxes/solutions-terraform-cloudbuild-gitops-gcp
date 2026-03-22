@@ -15,6 +15,20 @@
           "team": "app"
         }
       }
+    },
+    "keyring_iam_members": {
+      "admin-seguridad": {
+        "role": "roles/cloudkms.admin",
+        "member": "user:admin-data@tu-empresa.com"
+      },
+      "storage-svc-encrypt": {
+        "role": "roles/cloudkms.cryptoKeyEncrypterDecrypter",
+        "member": "serviceAccount:service-123456@gs-project-accounts.iam.gserviceaccount.com"
+      },
+      "data-engineers-viewer": {
+        "role": "roles/cloudkms.viewer",
+        "member": "group:data-eng-prod@tu-empresa.com"
+      }
     }
   }
 }
