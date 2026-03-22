@@ -27,7 +27,7 @@
       },
       "data-engineers-viewer": {
         "role": "roles/cloudkms.viewer",
-        "member": "herostorment@gmail.com"
+        "member": "user:herostorment@gmail.com"
       }
     }
   }
