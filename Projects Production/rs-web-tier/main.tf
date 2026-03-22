@@ -31,7 +31,7 @@ module "kms_keyrings" {
   location     = each.value.location
   keyring_name = each.key
   keys         = each.value.keys
-  keyring_iam_members = lookup(each.value, "iam_members", {})
+  keyring_iam_members = lookup(each.value, "keyring_iam_members", {})
 }
 
 module "network" {
