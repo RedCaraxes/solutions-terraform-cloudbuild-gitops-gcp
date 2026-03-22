@@ -10,8 +10,8 @@ resource "google_kms_crypto_key" "keys" {
   name            = each.key
   key_ring        = google_kms_key_ring.keyring.id
   purpose         = each.value.purpose
-  rotation_period = try(each.value.rotation_period, null)
-  labels          = try(each.value.labels, {})
+  rotation_period = each.value.rotation_period
+  labels          = each.value.labels
 
   lifecycle {
     prevent_destroy = true
@@ -26,3 +26,4 @@ resource "google_kms_key_ring_iam_member" "key_ring" {
   member      = each.value.member
 }
 
+# Definir rotación
