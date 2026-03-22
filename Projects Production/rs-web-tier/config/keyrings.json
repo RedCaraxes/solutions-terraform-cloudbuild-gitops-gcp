@@ -23,11 +23,11 @@
       },
       "storage-svc-encrypt": {
         "role": "roles/cloudkms.cryptoKeyEncrypterDecrypter",
-        "member": "serviceAccount:service-123456@gs-project-accounts.iam.gserviceaccount.com"
+        "member": "herostorment@gmail.com"
       },
       "data-engineers-viewer": {
         "role": "roles/cloudkms.viewer",
-        "member": "group:data-eng-prod@tu-empresa.com"
+        "member": "herostorment@gmail.com"
       }
     }
   }
