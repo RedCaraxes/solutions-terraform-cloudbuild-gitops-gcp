@@ -19,7 +19,7 @@
     "keyring_iam_members": {
       "admin-seguridad": {
         "role": "roles/cloudkms.admin",
-        "member": "user:admin-data@tu-empresa.com"
+        "member": "user:herostorment@gmail.com"
       },
       "storage-svc-encrypt": {
         "role": "roles/cloudkms.cryptoKeyEncrypterDecrypter",
