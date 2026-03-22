@@ -23,7 +23,7 @@
       },
       "storage-svc-encrypt": {
         "role": "roles/cloudkms.cryptoKeyEncrypterDecrypter",
-        "member": "herostorment@gmail.com"
+        "member": "user:herostorment@gmail.com"
       },
       "data-engineers-viewer": {
         "role": "roles/cloudkms.viewer",
