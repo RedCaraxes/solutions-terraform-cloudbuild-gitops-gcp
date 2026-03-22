@@ -42,6 +42,7 @@ module "network" {
   subnets                 = each.value.subnets
 }
 
+
 module "network_router" {
   source       = "../../modules/cloud_router"
   for_each = local.routers
