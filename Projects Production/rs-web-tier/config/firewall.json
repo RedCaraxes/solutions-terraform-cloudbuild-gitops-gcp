@@ -15,8 +15,8 @@
         "allow": [{ "protocol": "all" }]
       }
     },
-    "uc2-network-prod-001-tf": {
-      "deny-egress-internet": {
+    "uc2-network-prod-001": { 
+      "deny-egress-internet-tf": { 
         "description": "Block internet egress",
         "direction": "EGRESS",
         "ranges": ["0.0.0.0/0"],
