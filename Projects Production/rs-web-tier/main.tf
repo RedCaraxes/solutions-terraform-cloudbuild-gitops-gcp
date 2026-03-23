@@ -96,11 +96,6 @@ module "shared_vpc_access" {
   subnet_name         = each.value.subnet
 }
 
-
-locals {
-  firewall_config = jsondecode(file("${path.module}/config/firewall.json"))
-}
-
 module "firewall" {
   source   = "../../modules/firewall"
   for_each = local.firewall_config.firewall_rules
