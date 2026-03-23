@@ -2,6 +2,7 @@
   "compartir_redes": {
     "acceso_web": {
       "proyecto_invitado": "rs-app-tier-1",
+      "proyecto_numero": "906041062473",
       "region": "us-central1",
       "subnet": "uc1-subnetwork-prod-001"
     }

@@ -79,8 +79,19 @@ module "shared_vpc_access" {
   
   for_each = local.shared_config.compartir_redes
   
-  host_project_id    = var.project # Asegúrate que esta variable sea "rs-web-tier"
-  service_project_id = each.value.proyecto_invitado
-  region             = each.value.region
-  subnet_name        = each.value.subnet
+  # 1. host_project_id recibe el ID del proyecto actual (rs-web-tier)
+  host_project_id     = var.project 
+  
+  # 2. service_project_id recibe "rs-app-tier-1" del JSON
+  service_project_id  = each.value.proyecto_invitado
+  
+  # 3. service_project_num recibe "906041062473" del JSON
+  # IMPORTANTE: El nombre a la izquierda DEBE existir en variables.tf del módulo
+  service_project_num = each.value.proyecto_numero 
+  
+  # 4. region recibe "us-central1" del JSON
+  region              = each.value.region
+  
+  # 5. subnet_name recibe "uc1-subnetwork-prod-001" del JSON
+  subnet_name         = each.value.subnet
 }
