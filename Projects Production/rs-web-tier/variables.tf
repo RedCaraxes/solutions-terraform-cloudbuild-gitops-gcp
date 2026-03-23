@@ -19,22 +19,4 @@ variable "project" {
   default     = "rs-app-tier-1"
 }
 
-variable "host_project_id" {
-  type = string
-}
 
-variable "service_project_id" {
-  type = string
-}
-
-variable "service_project_num" {
-  type = string
-}
-
-variable "region" {
-  type = string
-}
-
-variable "subnet_name" {
-  type = string
-}
