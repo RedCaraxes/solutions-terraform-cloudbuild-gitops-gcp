@@ -6,5 +6,13 @@
       "region": "us-central1",
       "subnet": "uc1-subnetwork-prod-001"
     }
+  },
+  "compartir_apptier": {
+    "acceso_web": {
+      "proyecto_invitado": "rs-app-tier-2",
+      "proyecto_numero": "734145694374",
+      "region": "us-central1",
+      "subnet": "uc1-subnetwork-prod-001"
+    }
   }
 }
