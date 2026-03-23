@@ -1,9 +1,3 @@
-# 1. Habilitar el Proyecto Host (el dueño de la red)
-resource "google_compute_shared_vpc_host_project" "host" {
-  project = var.host_project_id
-}
-
-# 2. Vincular UN Proyecto de Servicio (el invitado)
 resource "google_compute_shared_vpc_service_project" "service_project" {
   host_project    = var.host_project_id
   service_project = var.service_project_id
