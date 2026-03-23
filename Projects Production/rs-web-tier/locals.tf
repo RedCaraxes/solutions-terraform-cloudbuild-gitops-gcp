@@ -19,5 +19,5 @@ locals {
 }
 
 locals {
-  shared_config = jsondecode(file("${path.module}/shared_vpc.json"))
+  shared_config = jsondecode(file("${path.module}/config/shared_vpc.json"))
 }
