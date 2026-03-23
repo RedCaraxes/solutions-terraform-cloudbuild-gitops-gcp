@@ -97,10 +97,12 @@ module "shared_vpc_access" {
 }
 
 
-module "firewall" {
-  source     = "../../modules/firewall"
-  project_id = var.project
-  network    = "uc1-network-prod-001"
+module "gcp_firewalls" {
+  source   = "./modules/firewall"
+  
+  # Iteramos sobre las llaves de "firewall_rules" (los nombres de las redes)
+  for_each = local.firewall_config.firewall_rules
 
-  firewall_rules = local.firewall_config.firewall_rules
+  network_name = each.key    # Ejemplo: "uc1-network-prod-001"
+  rules        = each.value  # Pasa el objeto interno con todas las reglas de esa red
 }

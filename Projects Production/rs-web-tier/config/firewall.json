@@ -1,6 +1,7 @@
 {
   "firewall_rules": {
-    "allow-ssh": {
+    "allow-ssh-uc1": {
+      "network": "uc1-network-prod-001",
       "description": "Allow SSH from internet",
       "direction": "INGRESS",
       "ranges": ["0.0.0.0/0"],
@@ -12,7 +13,8 @@
         }
       ]
     },
-    "allow-internal": {
+    "allow-internal-uc1": {
+      "network": "uc1-network-prod-001",
       "description": "Allow internal traffic",
       "direction": "INGRESS",
       "ranges": ["10.0.0.0/8"],
@@ -22,7 +24,8 @@
         }
       ]
     },
-    "deny-egress-internet": {
+    "deny-egress-uc2": {
+      "network": "uc2-network-prod-001",
       "description": "Block internet egress",
       "direction": "EGRESS",
       "ranges": ["0.0.0.0/0"],
