@@ -98,7 +98,7 @@ module "shared_vpc_access" {
 
 
 module "gcp_firewalls" {
-  source   = "./modules/firewall"
+  source   = "../../modules/firewall"
   
   # Iteramos sobre las llaves de "firewall_rules" (los nombres de las redes)
   for_each = local.firewall_config.firewall_rules
