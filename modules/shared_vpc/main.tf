@@ -1,8 +1,6 @@
 resource "google_compute_shared_vpc_service_project" "service_project" {
   host_project    = var.host_project_id
   service_project = var.service_project_id
-  
-  depends_on = [google_compute_shared_vpc_host_project.host]
 }
 
 # 3. Dar permiso en UNA Subred específica para que el invitado pueda usarla
