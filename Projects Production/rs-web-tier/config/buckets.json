@@ -3,73 +3,56 @@
     "location": "us-east4",
     "storage_class": "STANDARD",
     "labels": { "env": "prod", "team": "data" },
-    "iam_roles": [
-      { "role": "roles/storage.objectViewer", "members": ["user:herostorment@gmail.com"] }
-    ]
+    "iam_roles": {
+      "storagerole-001":{
+        "role": "roles/storage.objectViewer", 
+        "members": ["user:herostorment@gmail.com"]}
+    }
   },
   "bucket_rs_webtier912837493": {
     "location": "us-east4",
     "storage_class": "STANDARD",
     "labels": { "env": "prod", "team": "analytics" },
-    "iam_roles": [
-      { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
-    ]
+    "iam_roles": {
+      "storagerole-001":{
+        "role": "roles/storage.objectAdmin", 
+        "members": ["user:herostorment@gmail.com"]}
+    }
   },
   "bucket_rs_webtier910000093_new": {
     "location": "us-east4",
     "storage_class": "STANDARD",
-    "labels": { "env": "prod", "team": "analytics" },
-    "iam_roles": [
-      { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
-    ]
+    "labels": { "env": "prod", "team": "analytics" }
   },
   "bucket_rs_webtierdomingo0004_new": {
     "location": "us-east4",
     "storage_class": "STANDARD",
-    "labels": { "env": "prod", "team": "analytics" },
-    "iam_roles": [
-      { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
-    ]
+    "labels": { "env": "prod", "team": "analytics" }
   },
   "bucket_rs_webtierdomingo0003_new": {
     "location": "us-east4",
     "storage_class": "STANDARD",
-    "labels": { "env": "prod", "team": "analytics" },
-    "iam_roles": [
-      { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
-    ]
+    "labels": { "env": "prod", "team": "analytics" }
   },
   "bucket_rs_webtierdomingo0005_new": {
     "location": "us-east4",
     "storage_class": "STANDARD",
-    "labels": { "env": "prod", "team": "analytics" },
-    "iam_roles": [
-      { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
-    ]
+    "labels": { "env": "prod", "team": "analytics" }
   },
   "bucket_rs_webtierdomingo0010_new": {
     "location": "us-east4",
     "storage_class": "STANDARD",
-    "labels": { "env": "prod", "team": "analytics" },
-    "iam_roles": [
-      { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
-    ]
+    "labels": { "env": "prod", "team": "analytics" }
   },
   "bucket_rs_webtierdomingo0011_new": {
     "location": "us-east4",
     "storage_class": "STANDARD",
-    "labels": { "env": "prod", "team": "analytics" },
-    "iam_roles": [
-      { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
-    ]
+    "labels": { "env": "prod", "team": "analytics" }
   },
   "bucket_rs_webtierdomingo0012_new": {
     "location": "us-east4",
     "storage_class": "STANDARD",
-    "labels": { "env": "prod", "team": "analytics" },
-    "iam_roles": [
-      { "role": "roles/storage.objectAdmin", "members": ["user:herostorment@gmail.com"] }
-    ]
+    "labels": { "env": "prod", "team": "analytics" }
   }
 }
 
