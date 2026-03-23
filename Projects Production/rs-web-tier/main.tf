@@ -64,6 +64,10 @@ module "network_nat" {
   source_subnetwork_ip_ranges_to_nat = each.value.source_subnetwork_ip_ranges_to_nat
 }
 
+resource "google_compute_shared_vpc_host_project" "host" {
+  project = var.project
+}
+
 module "shared_vpc_access" {
   source   = "../../modules/shared_vpc"
   
