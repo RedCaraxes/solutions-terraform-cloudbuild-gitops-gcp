@@ -4,11 +4,6 @@
       "proyecto_invitado": "rs-app-tier-1",
       "region": "us-central1",
       "subnet": "uc1-subnetwork-prod-001"
-    },
-    "acceso_datos": {
-      "proyecto_invitado": "rs-cloudbuild-tf",
-      "region": "us-central1",
-      "subnet": "uc1-subnetwork-prod-002"
     }
   }
 }
