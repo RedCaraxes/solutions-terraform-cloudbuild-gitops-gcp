@@ -17,3 +17,7 @@ locals {
 locals {
   nats = jsondecode(file("${path.module}/config/nats.json"))
 }
+
+locals {
+  shared_config = jsondecode(file("${path.module}/shared_vpc.json"))
+}
