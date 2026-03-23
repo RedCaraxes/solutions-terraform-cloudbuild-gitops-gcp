@@ -73,13 +73,13 @@ resource "google_compute_shared_vpc_host_project" "host" {
   }
 }
 
-module "shared_vpc_access" {
-  source   = "../../modules/shared_vpc"
+# module "shared_vpc_access" {
+#   source   = "../../modules/shared_vpc"
   
-  # Una sola declaración que recorre todo el JSON
-  for_each = local.shared_config.compartir_redes
-  host_project_id    = var.project
-  service_project_id = each.value.proyecto_invitado
-  region             = each.value.region
-  subnet_name        = each.value.subnet
-}
+#   # Una sola declaración que recorre todo el JSON
+#   for_each = local.shared_config.compartir_redes
+#   host_project_id    = var.project
+#   service_project_id = each.value.proyecto_invitado
+#   region             = each.value.region
+#   subnet_name        = each.value.subnet
+# }
