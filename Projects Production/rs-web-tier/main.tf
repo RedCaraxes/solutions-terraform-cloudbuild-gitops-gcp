@@ -66,6 +66,11 @@ module "network_nat" {
 
 resource "google_compute_shared_vpc_host_project" "host" {
   project = var.project
+  lifecycle {
+
+    prevent_destroy = true 
+    ignore_changes  = [project]
+  }
 }
 
 module "shared_vpc_access" {
