@@ -95,3 +95,12 @@ module "shared_vpc_access" {
   # 5. subnet_name recibe "uc1-subnetwork-prod-001" del JSON
   subnet_name         = each.value.subnet
 }
+
+
+module "firewall" {
+  source     = "../../modules/firewall"
+  project_id = var.project
+  network    = "uc1-network-prod-001"
+
+  firewall_rules = local.firewall_config.firewall_rules
+}

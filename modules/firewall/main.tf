@@ -1,32 +1,38 @@
-# Copyright 2019 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# cambio 03
+resource "google_compute_firewall" "rules" {
+  for_each = var.firewall_rules
 
-locals {
-  network = "${element(split("-", var.subnet), 0)}"
-}
+  name    = each.key
+  project = var.project_id
+  network = var.network
 
-resource "google_compute_firewall" "allow-http" {
-  name    = "${local.network}-allow-http"
-  network = "${local.network}"
-  project = "${var.project}"
+  description = try(each.value.description, null)
+  direction   = each.value.direction
+  priority    = try(each.value.priority, 1000)
 
-  allow {
-    protocol = "tcp"
-    ports    = ["80"]
+  # IMPORTANTE: depende de direction
+  source_ranges      = each.value.direction == "INGRESS" ? try(each.value.ranges, null) : null
+  destination_ranges = each.value.direction == "EGRESS"  ? try(each.value.ranges, null) : null
+
+  target_tags           = try(each.value.target_tags, null)
+  target_service_accounts = try(each.value.target_sas, null)
+
+  dynamic "allow" {
+    for_each = try(each.value.allow, [])
+    content {
+      protocol = allow.value.protocol
+      ports    = try(allow.value.ports, null)
+    }
   }
 
-  target_tags   = ["http-server"]
-  source_ranges = ["0.0.0.0/0"]
+  dynamic "deny" {
+    for_each = try(each.value.deny, [])
+    content {
+      protocol = deny.value.protocol
+      ports    = try(deny.value.ports, null)
+    }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }

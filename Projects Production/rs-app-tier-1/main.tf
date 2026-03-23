@@ -28,12 +28,6 @@ module "vpc" {
   env     = "${local.env}"
 }
 
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
 module "vpc2" {
   source  = "../../modules/vpc"
   project = "${var.project}"

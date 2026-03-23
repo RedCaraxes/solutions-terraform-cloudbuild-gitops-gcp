@@ -1,0 +1,36 @@
+{
+  "firewall_rules": {
+    "allow-ssh": {
+      "description": "Allow SSH from internet",
+      "direction": "INGRESS",
+      "ranges": ["0.0.0.0/0"],
+      "target_tags": ["ssh"],
+      "allow": [
+        {
+          "protocol": "tcp",
+          "ports": ["22"]
+        }
+      ]
+    },
+    "allow-internal": {
+      "description": "Allow internal traffic",
+      "direction": "INGRESS",
+      "ranges": ["10.0.0.0/8"],
+      "allow": [
+        {
+          "protocol": "all"
+        }
+      ]
+    },
+    "deny-egress-internet": {
+      "description": "Block internet egress",
+      "direction": "EGRESS",
+      "ranges": ["0.0.0.0/0"],
+      "deny": [
+        {
+          "protocol": "all"
+        }
+      ]
+    }
+  }
+}

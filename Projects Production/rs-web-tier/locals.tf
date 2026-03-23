@@ -21,3 +21,7 @@ locals {
 locals {
   shared_config = jsondecode(file("${path.module}/config/shared_vpc.json"))
 }
+
+locals {
+  firewall_config = jsondecode(file("${path.module}/config/firewall.json"))
+}
