@@ -5,10 +5,8 @@
       "proyecto_numero": "906041062473",
       "region": "us-central1",
       "subnet": "uc1-subnetwork-prod-001"
-    }
-  },
-  "compartir_apptier": {
-    "acceso_web": {
+    },
+    "acceso_web_02": {
       "proyecto_invitado": "rs-app-tier-2",
       "proyecto_numero": "734145694374",
       "region": "us-central1",
