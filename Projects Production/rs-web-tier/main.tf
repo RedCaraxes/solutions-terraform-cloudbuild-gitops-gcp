@@ -97,12 +97,14 @@ module "shared_vpc_access" {
 }
 
 
-module "gcp_firewalls" {
+locals {
+  firewall_config = jsondecode(file("${path.module}/config/firewall.json"))
+}
+
+module "firewall" {
   source   = "../../modules/firewall"
-  
-  # Iteramos sobre las llaves de "firewall_rules" (los nombres de las redes)
   for_each = local.firewall_config.firewall_rules
 
   network_name = each.key    # Ejemplo: "uc1-network-prod-001"
-  rules        = each.value  # Pasa el objeto interno con todas las reglas de esa red
+  rules        = each.value  # Pasa el MAPA de reglas de esa red
 }

@@ -1,17 +1,16 @@
 resource "google_compute_firewall" "rules" {
-  for_each = var.rules
+  for_each = var.rules # Aquí itera sobre "allow-ssh", "allow-internal", etc.
 
-  name        = each.key
-  network     = var.network_name
+  name    = each.key
+  network = var.network_name
+
   description = lookup(each.value, "description", null)
   direction   = lookup(each.value, "direction", "INGRESS")
-  target_tags = lookup(each.value, "target_tags", null)
 
-  # Si es INGRESS usa source_ranges, si es EGRESS usa destination_ranges
-  source_ranges      = each.value.direction == "INGRESS" ? each.value.ranges : null
-  destination_ranges = each.value.direction == "EGRESS" ? each.value.ranges : null
+  source_ranges      = lookup(each.value, "direction", "INGRESS") == "INGRESS" ? each.value.ranges : null
+  destination_ranges = lookup(each.value, "direction", "INGRESS") == "EGRESS" ? each.value.ranges : null
+  target_tags        = lookup(each.value, "target_tags", null)
 
-  # Bloque dinámico para "allow"
   dynamic "allow" {
     for_each = lookup(each.value, "allow", [])
     content {
@@ -20,7 +19,6 @@ resource "google_compute_firewall" "rules" {
     }
   }
 
-  # Bloque dinámico para "deny"
   dynamic "deny" {
     for_each = lookup(each.value, "deny", [])
     content {
