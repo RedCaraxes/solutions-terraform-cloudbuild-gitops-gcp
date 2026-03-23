@@ -73,13 +73,14 @@ module "network_nat" {
 #   }
 # }
 
-# module "shared_vpc_access" {
-#   source   = "../../modules/shared_vpc"
+# El módulo debe estar ACTIVO para que trabaje
+module "shared_vpc_access" {
+  source   = "../../modules/shared_vpc"
   
-#   # Una sola declaración que recorre todo el JSON
-#   for_each = local.shared_config.compartir_redes
-#   host_project_id    = var.project
-#   service_project_id = each.value.proyecto_invitado
-#   region             = each.value.region
-#   subnet_name        = each.value.subnet
-# }
+  for_each = local.shared_config.compartir_redes
+  
+  host_project_id    = var.project # Asegúrate que esta variable sea "rs-web-tier"
+  service_project_id = each.value.proyecto_invitado
+  region             = each.value.region
+  subnet_name        = each.value.subnet
+}
