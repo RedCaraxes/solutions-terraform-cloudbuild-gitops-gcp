@@ -8,7 +8,7 @@
         "role": "roles/storage.objectViewer", 
         "member": "user:herostorment@gmail.com"},
         "storagerole-002":{
-        "role": "roles/storage.objectViewer", 
+        "role": "roles/storage.objectAdmin", 
         "member": "user:herostorment@gmail.com"}
     }
   },
@@ -25,7 +25,12 @@
   "bucket_rs_webtier910000093_new": {
     "location": "us-east4",
     "storage_class": "STANDARD",
-    "labels": { "env": "prod", "team": "analytics" }
+    "labels": { "env": "prod", "team": "analytics" },
+    "iam_roles": {
+      "storagerole-001":{
+        "role": "roles/storage.objectAdmin", 
+        "member": "user:herostorment@gmail.com"}
+    }
   },
   "bucket_rs_webtierdomingo0004_new": {
     "location": "us-east4",
