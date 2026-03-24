@@ -6,7 +6,7 @@
     "iam_roles": {
       "storagerole-001":{
         "role": "roles/storage.objectViewer", 
-        "members": "user:herostorment@gmail.com"}
+        "member": "user:herostorment@gmail.com"}
     }
   },
   "bucket_rs_webtier912837493": {
@@ -16,7 +16,7 @@
     "iam_roles": {
       "storagerole-001":{
         "role": "roles/storage.objectAdmin", 
-        "members": "user:herostorment@gmail.com"}
+        "member": "user:herostorment@gmail.com"}
     }
   },
   "bucket_rs_webtier910000093_new": {
