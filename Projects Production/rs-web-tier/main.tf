@@ -83,7 +83,6 @@ module "firewall" {
 
 module "vpc_routes" {
   source     = "../../modules/vpc_routes"
-
-  # Cargamos el mapa de rutas desde el JSON
+  # Asegúrate que este JSON tenga campos de RUTAS, no de Shared VPC
   routes = jsondecode(file("${path.module}/config/routes.json"))
 }
