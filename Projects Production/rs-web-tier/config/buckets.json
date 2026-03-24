@@ -8,7 +8,7 @@
         "role": "roles/storage.objectViewer", 
         "member": "user:herostorment@gmail.com"},
         "storagerole-002":{
-        "role": "roles/storage.objectAdmin", 
+        "role": "roles/storage.objectCreator", 
         "member": "user:herostorment@gmail.com"}
     }
   },
@@ -28,14 +28,22 @@
     "labels": { "env": "prod", "team": "analytics" },
     "iam_roles": {
       "storagerole-001":{
-        "role": "roles/storage.objectAdmin", 
+        "role": "roles/storage.admin", 
         "member": "user:herostorment@gmail.com"}
     }
   },
   "bucket_rs_webtierdomingo0004_new": {
     "location": "us-east4",
     "storage_class": "STANDARD",
-    "labels": { "env": "prod", "team": "analytics" }
+    "labels": { "env": "prod", "team": "analytics" },
+    "iam_roles": {
+      "storagerole-001":{
+        "role": "roles/storage.objectViewer", 
+        "member": "user:herostorment@gmail.com"},
+        "storagerole-002":{
+        "role": "roles/storage.objectCreator", 
+        "member": "user:herostorment@gmail.com"}
+    }
   },
   "bucket_rs_webtierdomingo0003_new": {
     "location": "us-east4",
