@@ -6,6 +6,9 @@
     "iam_roles": {
       "storagerole-001":{
         "role": "roles/storage.objectViewer", 
+        "member": "user:herostorment@gmail.com"},
+        "storagerole-002":{
+        "role": "roles/storage.objectViewer", 
         "member": "user:herostorment@gmail.com"}
     }
   },
