@@ -25,3 +25,7 @@ locals {
 locals {
   firewall_config = jsondecode(file("${path.module}/config/firewall.json"))
 }
+
+locals {
+  routes = jsondecode(file("${path.module}/config/routes.json"))
+}
