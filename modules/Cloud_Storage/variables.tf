@@ -52,7 +52,7 @@ variable "storage_bucket_iam_member" {
   description = "No autoritativo. Actualiza la política de IAM para otorgar un rol a un nuevo miembro."
   type = map(object({
     role = string 
-    members = list(string)
+    member = string
   }))
   default = {}
 }

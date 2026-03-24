@@ -45,7 +45,7 @@ resource "google_storage_bucket_iam_member" "member" {
   for_each = var.storage_bucket_iam_member
   bucket = google_storage_bucket.bucket.name
   role = each.value.role
-  member = each.value.members
+  member = each.value.member
   # timeouts {
   #   create = "5m"
   # }
