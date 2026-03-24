@@ -1,0 +1,24 @@
+{
+  "rt-internet-exit": {
+    "network": "uc1-network-prod-001",
+    "dest_range": "0.0.0.0/0",
+    "priority": 100,
+    "description": "Salida default a internet por Gateway",
+    "next_hop_gateway": "default-internet-gateway"
+  },
+  "rt-to-branch-via-vpn": {
+    "network": "uc1-network-prod-001",
+    "dest_range": "10.50.0.0/16",
+    "priority": 200,
+    "description": "Ruta hacia sucursal a través de túnel VPN",
+    "next_hop_vpn_tunnel": "ue4-vpn-prod-tunnel-001"
+  },
+
+  "rt-to-onprem-via-ilb": {
+    "network": "uc1-network-prod-001",
+    "dest_range": "192.168.1.0/24",
+    "priority": 300,
+    "description": "Ruta a On-Premise enviando tráfico a un conjunto de Firewalls HA (detrás de un ILB)",
+    "next_hop_ilb": "ue4-nva-ha-ilb-rule"
+  }
+}

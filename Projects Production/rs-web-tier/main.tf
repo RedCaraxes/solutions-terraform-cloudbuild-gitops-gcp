@@ -80,3 +80,10 @@ module "firewall" {
   network_name = each.key    # Ejemplo: "uc1-network-prod-001"
   rules        = each.value  # Pasa el MAPA de reglas de esa red
 }
+
+module "vpc_routes" {
+  source     = "../../modules/vpc_routes"
+
+  # Cargamos el mapa de rutas desde el JSON
+  routes = jsondecode(file("${path.module}/config/routes.json"))
+}
