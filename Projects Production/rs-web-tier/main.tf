@@ -88,7 +88,7 @@ module "vpc_routes" {
 }
 
 module "composer_environments" {
-  source   = "./modules/composer"
+  source   = "../../modules/composer"
   for_each = local.composer_data
 
   # Valores dinámicos del JSON
