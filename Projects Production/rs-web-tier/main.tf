@@ -1,6 +1,6 @@
 module "buckets" {
   source       = "../../modules/Cloud_Storage"
-  for_each     = local.buckets
+  for_each     = try(local.buckets,{})
   bucket_name         = each.key
   location     = each.value.location
   storage_class= each.value.storage_class
@@ -12,7 +12,7 @@ module "buckets" {
 
 module "kms_keyrings" {
   source   = "../../modules/key_management"
-  for_each = local.keyrings
+  for_each = try(local.keyrings,{})
 
   project_id   = var.project
   location     = each.value.location
@@ -23,7 +23,7 @@ module "kms_keyrings" {
 
 module "network" {
   source = "../../modules/Network"
-  for_each = local.networks
+  for_each = try(local.networks,{})
   network_name            = each.key
   auto_create_subnetworks = each.value.auto_create_subnetworks
   subnets                 = each.value.subnets
@@ -32,7 +32,7 @@ module "network" {
 
 module "network_router" {
   source       = "../../modules/cloud_router"
-  for_each = local.routers
+  for_each = try(local.routers,{})
   project_id   = var.project
   region       = each.value.region
   network_id   = each.value.network_id
@@ -42,7 +42,7 @@ module "network_router" {
 
 module "network_nat" {
   source      = "../../modules/cloud_nat"
-  for_each = local.nats
+  for_each = try(local.nats,{})
   project_id  = var.project
   region      = each.value.region
   router_name = each.value.router_name
@@ -54,7 +54,7 @@ module "network_nat" {
 module "shared_vpc_access" {
   source   = "../../modules/shared_vpc"
   
-  for_each = local.shared_config.compartir_redes
+  for_each = try(local.shared_config.compartir_redes,{})
   
   # 1. host_project_id recibe el ID del proyecto actual (rs-web-tier)
   host_project_id     = var.project 
@@ -75,7 +75,7 @@ module "shared_vpc_access" {
 
 module "firewall" {
   source   = "../../modules/firewall"
-  for_each = local.firewall_config.firewall_rules
+  for_each = try(local.firewall_config.firewall_rules,{})
 
   network_name = each.key    # Ejemplo: "uc1-network-prod-001"
   rules        = each.value  # Pasa el MAPA de reglas de esa red
