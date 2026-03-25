@@ -37,74 +37,6 @@
           "snet-sec-01-rng-hst-dv-dd": "192.168.12.0/22",
           "snet-sec-02-rng-hst-dv-dd": "10.254.254.32/27"
         }
-      },
-      "uc1-orgnet-prd-net-dev-sbn-006": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.24.0/28",
-        "secondary_ip_ranges": {
-          "range-dev-1": "10.214.25.0/29"
-        }
-      },
-      "uc1-orgnet-prd-net-dev-sbn-008": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.28.0/22",
-        "secondary_ip_ranges": {
-          "snet-sec-01-rng-hst-dv-dd-trv": "192.168.24.0/22",
-          "snet-sec-02-rng-hst-dv-dd-trv": "10.254.254.160/27"
-        }
-      },
-      "uc1-orgnet-prd-net-dev-sbn-009": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.32.0/22",
-        "secondary_ip_ranges": {
-          "snet-sec-01-rng-hst-dv-dd-trv": "192.168.28.0/22",
-          "snet-sec-02-rng-hst-dv-dd-trv": "10.254.254.192/27"
-        }
-      },
-      "uc1-orgnet-prd-net-dev-sbn-010": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.36.0/22",
-        "secondary_ip_ranges": {
-          "snet-sec-01-rng-hst-dv-dd-trv": "192.168.40.0/21",
-          "snet-sec-02-rng-hst-dv-dd-trv": "10.254.254.224/27"
-        }
-      },
-      "uc1-orgnet-prd-net-dev-sbn-011": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.40.0/22"
-      }
-    }
-  },
-  "uc1-orgnet-prd-net-prd-vpc-001": {
-    "auto_create_subnetworks": false,
-    "subnets": {
-      "uc1-orgnet-prd-net-prd-sbn-001": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.48.0/20",
-        "secondary_ip_ranges": {
-          "snet-sec-01-rng-hst-prd": "192.168.16.0/22",
-          "snet-sec-02-rng-hst-prd": "10.254.254.64/27"
-        }
-      },
-      "uc1-orgnet-prd-net-prd-sbn-002": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.64.0/20"
-      },
-      "uc1-orgnet-prd-net-prd-sbn-003": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.80.0/20",
-        "secondary_ip_ranges": {
-          "snet-sec-02-prd-net-prd-dd-trv": "10.214.254.96/27",
-          "snet-sec-01-prd-net-prd-dd-trv": "192.168.56.0/21"
-        }
-      },
-      "uc1-orgnet-prd-net-prd-sbn-004": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.96.0/20"
-      },
-      "uc1-orgnet-prd-net-prd-sbn-005": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.112.0/28"
       }
     }
   },
@@ -157,23 +89,5 @@
         "ip_cidr_range": "172.22.152.0/28"
       }
     }
-  },
-  
-  "uc1-orgnet-prd-net-tr-vpc-001": {
-    "auto_create_subnetworks": false,
-    "subnets": {
-      "uc1-orgnet-prd-net-tr-sbn-001": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.0.0/27"
-      },
-      "uc1-orgnet-prd-net-tr-sbn-002": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.0.32/27"
-      },
-      "uc1-orgnet-prd-net-tr-sbn-003": {
-        "location": "us-central1",
-        "ip_cidr_range": "172.22.0.64/27"
-      }
-    }
-}
+  }
 }
