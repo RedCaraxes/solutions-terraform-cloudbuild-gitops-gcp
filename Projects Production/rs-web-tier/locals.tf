@@ -29,3 +29,7 @@ locals {
 locals {
   routes = jsondecode(file("${path.module}/config/routes.json"))
 }
+
+locals {
+  composer_data = jsondecode(file("${path.module}/composer_envs.json"))
+}

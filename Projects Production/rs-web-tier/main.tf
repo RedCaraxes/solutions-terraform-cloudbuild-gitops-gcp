@@ -86,3 +86,20 @@ module "vpc_routes" {
   # Asegúrate que este JSON tenga campos de RUTAS, no de Shared VPC
   routes = local.routes
 }
+
+module "composer_environments" {
+  source   = "./modules/composer"
+  for_each = local.composer_data
+
+  # Valores dinámicos del JSON
+  name       = each.key
+  region     = each.value.region
+  subnetwork = each.value.subnetwork
+  env_size   = each.value.env_size
+
+  # Valores fijos declarados directamente
+  project         = "rs-web-tier"
+  network         = "uc1-network-prod-001"
+  service_account = "composer-worker-sa@rs-web-tier.iam.gserviceaccount.com"
+  image_version   = "composer-3-airflow-2.10.2"
+}
