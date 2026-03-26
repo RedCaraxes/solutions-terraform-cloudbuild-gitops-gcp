@@ -85,4 +85,5 @@ module "vpc_routes" {
   source     = "../../modules/vpc_routes"
   # Asegúrate que este JSON tenga campos de RUTAS, no de Shared VPC
   routes = local.routes
+  
 }
