@@ -3,18 +3,23 @@ set -e
 
 # 1. Validar argumentos
 if [ "$#" -lt 2 ]; then
-  echo "Uso: sh tag-push.sh <accion#projectid> <ticket> [--all]"
+  echo "Uso: sh tag-push.sh <project_id> <ticket> [--all]"
   exit 1
 fi
 
-TAG_INFO="$1" 
+PROJECT_ID="$1"
 TICKET="$2"
 MODE="$3"
 
-ACCION=$(echo "$TAG_INFO" | cut -d'#' -f1)
-PROJECT_ID=$(echo "$TAG_INFO" | cut -d'#' -f2)
 DATE=$(date +"%Y%m%d%H%M")
-FULL_TAG="${TAG_INFO}#${TICKET}#${DATE}"
+FULL_TAG="${PROJECT_ID}#${TICKET}#${DATE}"
+
+# 🚨 Bloqueo en main (seguridad)
+CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
+if [ "$CURRENT_BRANCH" == "main" ]; then
+  echo "❌ ERROR: No debes ejecutar este script en main"
+  exit 1
+fi
 
 # 2. Localizar ambiente y carpeta
 POSIBLES_AMBIENTES=("Projects Production" "Projects Development" "Projects Networking" "Projects Security y Organizations")
@@ -38,7 +43,7 @@ if [ -z "$TARGET_DIR" ]; then
     exit 1
 fi
 
-# 3. Definir que archivos añadir
+# 3. Definir archivos
 if [ "$MODE" == "--all" ]; then
     SCOPE="TODO EL REPOSITORIO (Mantenimiento)"
     git add .
@@ -47,11 +52,11 @@ else
     git add "$TARGET_DIR"
 fi
 
-# 4. Resumen y Confirmacion
+# 4. Resumen
 echo "========================================================="
 echo "        RESUMEN DE DESPLIEGUE"
 echo "========================================================="
-echo " OPERACION:  $ACCION"
+echo " RAMA:       $CURRENT_BRANCH"
 echo " ALCANCE:    $SCOPE"
 echo " AMBIENTE:   $AMBIENTE_DETECTADO"
 echo " PROYECTO:   $PROJECT_ID"
@@ -59,24 +64,16 @@ echo " TICKET:     $TICKET"
 echo " TAG:        $FULL_TAG"
 echo "========================================================="
 
-# --- INSPECCIÓN DE ESTADO PRE-DESPLIEGUE ---
+# Estado
 if git diff --cached --quiet; then
-    if [ "$ACCION" == "apply" ]; then
-        echo ">>> ESTADO: SIN CAMBIOS LOCALES NUEVOS"
-        echo ">>> REVISIÓN DE ÚLTIMO COMMIT DISPONIBLE (BASE PARA APPLY):"
-        echo "---------------------------------------------------------"
-        git log -1 --name-status --oneline || echo "Aviso: No se pudo leer el historial de Git."
-    else
-        echo ">>> ESTADO: LISTO PARA EJECUTAR PLAN (SIN CAMBIOS PENDIENTES)"
-    fi
+    echo ">>> SIN CAMBIOS LOCALES NUEVOS"
 else
-    echo ">>> CAMBIOS DETECTADOS PARA CONFIRMAR Y SUBIR:"
+    echo ">>> CAMBIOS DETECTADOS:"
     git status --short
 fi
-# -------------------------------------------
 
 echo "---------------------------------------------------------"
-read -p "¿Confirmas el despliegue con alcance [$SCOPE]? (s/n): " confirm
+read -p "¿Confirmas el despliegue? (s/n): " confirm
 
 if [[ ! "$confirm" =~ ^[Ss]$ ]]; then
     echo "Operacion cancelada."
@@ -84,26 +81,16 @@ if [[ ! "$confirm" =~ ^[Ss]$ ]]; then
     exit 0
 fi
 
-# 5. Commit y Push (Con visualización de historial para Apply)
+# 5. Commit y Push
 if git diff --cached --quiet; then
-    echo "No hay cambios locales nuevos detectados."
-    
-    if [ "$ACCION" == "apply" ]; then
-        echo "---------------------------------------------------------"
-        echo ">>> REVISANDO CAMBIOS YA CONFIRMADOS (PLAN ANTERIOR):"
-        # El '|| true' evita que el script muera si el log falla
-        git log -1 --name-status --oneline || true
-        echo "---------------------------------------------------------"
-    fi
-    echo "Solo se subira el Tag."
+    echo "No hay cambios nuevos, solo se subira el tag."
 else
-    echo "Confirmando nuevos cambios locales..."
-    git commit -m "Deploy $TICKET: $PROJECT_ID | Modo: ${MODE:-Selective}"
-    git push origin $(git symbolic-ref --short HEAD)
+    echo "Confirmando cambios..."
+    git commit -m "Deploy $TICKET: $PROJECT_ID | Branch: $CURRENT_BRANCH"
+    git push origin "$CURRENT_BRANCH"
 fi
 
-# 6. Taggear y subir (ESTO ACTIVA LOS TRIGGERS)
-# No mover ni borrar estas líneas
+# 6. Tag (🔥 sigue siendo tu trigger)
 git tag -a "$FULL_TAG" -m "Ticket: $TICKET | Scope: $SCOPE"
 git push origin --tags
 
