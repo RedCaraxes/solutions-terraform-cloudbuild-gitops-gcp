@@ -3,7 +3,7 @@ set -e
 
 # 1. Validar argumentos
 if [ "$#" -lt 2 ]; then
-  echo "Uso: sh tag-push.sh <project_id> <ticket> [--all]"
+  echo "Uso: sh push.sh <project_id> <ticket> [--all]"
   exit 1
 fi
 
@@ -12,14 +12,6 @@ TICKET="$2"
 MODE="$3"
 
 DATE=$(date +"%Y%m%d%H%M")
-FULL_TAG="${PROJECT_ID}#${TICKET}#${DATE}"
-
-# 🚨 Bloqueo en main (seguridad)
-CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
-if [ "$CURRENT_BRANCH" == "main" ]; then
-  echo "❌ ERROR: No debes ejecutar este script en main"
-  exit 1
-fi
 
 # 2. Localizar ambiente y carpeta
 POSIBLES_AMBIENTES=("Projects Production" "Projects Development" "Projects Networking" "Projects Security y Organizations")
@@ -43,7 +35,7 @@ if [ -z "$TARGET_DIR" ]; then
     exit 1
 fi
 
-# 3. Definir archivos
+# 3. Definir alcance
 if [ "$MODE" == "--all" ]; then
     SCOPE="TODO EL REPOSITORIO (Mantenimiento)"
     git add .
@@ -54,26 +46,28 @@ fi
 
 # 4. Resumen
 echo "========================================================="
-echo "        RESUMEN DE DESPLIEGUE"
+echo "        RESUMEN DE PUSH"
 echo "========================================================="
-echo " RAMA:       $CURRENT_BRANCH"
 echo " ALCANCE:    $SCOPE"
 echo " AMBIENTE:   $AMBIENTE_DETECTADO"
 echo " PROYECTO:   $PROJECT_ID"
 echo " TICKET:     $TICKET"
-echo " TAG:        $FULL_TAG"
+echo " BRANCH:     $(git symbolic-ref --short HEAD)"
 echo "========================================================="
 
-# Estado
+# --- INSPECCIÓN ---
 if git diff --cached --quiet; then
-    echo ">>> SIN CAMBIOS LOCALES NUEVOS"
+    echo ">>> ESTADO: SIN CAMBIOS NUEVOS"
+    echo ">>> Último commit:"
+    git log -1 --name-status --oneline || true
 else
     echo ">>> CAMBIOS DETECTADOS:"
     git status --short
 fi
+# -----------------
 
 echo "---------------------------------------------------------"
-read -p "¿Confirmas el despliegue? (s/n): " confirm
+read -p "¿Confirmas el push [$SCOPE]? (s/n): " confirm
 
 if [[ ! "$confirm" =~ ^[Ss]$ ]]; then
     echo "Operacion cancelada."
@@ -83,15 +77,13 @@ fi
 
 # 5. Commit y Push
 if git diff --cached --quiet; then
-    echo "No hay cambios nuevos, solo se subira el tag."
+    echo "No hay cambios nuevos, no se hará commit."
 else
     echo "Confirmando cambios..."
-    git commit -m "Deploy $TICKET: $PROJECT_ID | Branch: $CURRENT_BRANCH"
-    git push origin "$CURRENT_BRANCH"
+    git commit -m "[$TICKET] Deploy $PROJECT_ID | $(git symbolic-ref --short HEAD)"
 fi
 
-# 6. Tag (🔥 sigue siendo tu trigger)
-git tag -a "$FULL_TAG" -m "Ticket: $TICKET | Scope: $SCOPE"
-git push origin --tags
+echo "Subiendo cambios al remoto..."
+git push origin $(git symbolic-ref --short HEAD)
 
-echo "===== Tag $FULL_TAG enviado con exito ====="
+echo "===== Push completado ====="

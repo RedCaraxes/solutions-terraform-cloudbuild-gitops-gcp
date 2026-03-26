@@ -2,127 +2,151 @@ options:
   default_logs_bucket_behavior: REGIONAL_USER_OWNED_BUCKET
 
 steps:
-  # 1. Extraer variables del TAG
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
-    id: 'parse-tag-and-sa'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        echo ">>> Analizando Tag: $TAG_NAME"
-        
-        # Extraer variables (1=accion, 2=proyecto, 3=ticket)
-        export ACTION=$$(echo "$TAG_NAME" | cut -d'#' -f1)
-        export PROJECT_ID=$$(echo "$TAG_NAME" | cut -d'#' -f2)
-        export TICKET=$$(echo "$TAG_NAME" | cut -d'#' -f3)
-        
-        # Obtener el Project Number
-        PROJECT_NUMBER=$$(gcloud projects describe $${PROJECT_ID} --format='get(projectNumber)')
-        
-        # CONSTRUIR EL EMAIL DE LA SA CON PREFIJO 'id-'
-        TF_SA="id-$${PROJECT_NUMBER}-tf@$${PROJECT_ID}.iam.gserviceaccount.com"
-        echo ">>> SA Dinámica a impersonar: $${TF_SA}"
+# 1. Detectar proyecto, acción y SA
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+  id: 'detect-context'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      echo ">>> Detectando contexto del build..."
 
-        echo "Ticket asociado: $${TICKET}"
-        echo "Accion: $${ACTION} | Proyecto: $${PROJECT_ID}"
+      echo "Branch: $BRANCH_NAME"
+      echo "Commit: $COMMIT_SHA"
 
-        FINAL_PATH=""
-        for folder in "Projects Production" "Projects Development" "Projects Networking" "Projects Security y Organizations"; do
-          if [ -d "$$folder/$${PROJECT_ID}" ]; then
-            FINAL_PATH="$$folder/$${PROJECT_ID}"
-            echo "Ambiente detectado: $$folder"
-            break
-          fi
-        done
+      # 🔥 Determinar acción según branch
+      if [ "$BRANCH_NAME" == "main" ]; then
+        ACTION="apply"
+      else
+        ACTION="plan"
+      fi
 
-        if [ -z "$$FINAL_PATH" ]; then
-          echo "ERROR: Carpeta no encontrada para $${PROJECT_ID}"
-          exit 1
-        fi
+      echo ">>> Acción detectada: $ACTION"
 
-        echo "$$FINAL_PATH" > /workspace/tf_folder
-        echo "$${ACTION}" > /workspace/tf_action
-        echo "$${TICKET}" > /workspace/tf_ticket
-        echo "$$TF_SA"      > /workspace/tf_sa
+      # 🔍 Detectar archivos modificados
+      CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+
+      if [ -z "$CHANGED_FILES" ]; then
+        echo "ERROR: No se detectaron cambios en el commit."
+        exit 1
+      fi
+
+      echo ">>> Archivos modificados:"
+      echo "$CHANGED_FILES"
+
+      # 🎯 Tomar el primer archivo como referencia
+      TARGET_FILE=$(echo "$CHANGED_FILES" | head -n 1)
+
+      # Extraer carpeta y proyecto
+      PROJECT_ID=$(echo "$TARGET_FILE" | cut -d'/' -f2)
+      FINAL_PATH=$(echo "$TARGET_FILE" | cut -d'/' -f1-2)
+
+      echo ">>> Proyecto detectado: $PROJECT_ID"
+      echo ">>> Ruta detectada: $FINAL_PATH"
+
+      if [ ! -d "$FINAL_PATH" ]; then
+        echo "ERROR: La carpeta $FINAL_PATH no existe"
+        exit 1
+      fi
+
+      # 🔐 Obtener Project Number
+      PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} --format='get(projectNumber)')
+
+      # Construir SA dinámica
+      TF_SA="id-${PROJECT_NUMBER}-tf@${PROJECT_ID}.iam.gserviceaccount.com"
+
+      echo ">>> SA a usar: $TF_SA"
+
+      # Guardar variables
+      echo "$FINAL_PATH" > /workspace/tf_folder
+      echo "$ACTION" > /workspace/tf_action
+      echo "$PROJECT_ID" > /workspace/tf_project
+      echo "$TF_SA" > /workspace/tf_sa
+
 
 # 2. Ejecutar Terraform
-  - name: 'hashicorp/terraform'
-    id: 'tf-run'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-        # Inyectar la identidad calculada (id-<number>-tf@...)
-        export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=$(cat /workspace/tf_sa)
-        
-        # Recuperamos los valores del workspace
-        TF_ACTION=$$(cat /workspace/tf_action)
-        TF_FOLDER=$$(cat /workspace/tf_folder)
-        cd "$${TF_FOLDER}"
+- name: 'hashicorp/terraform'
+  id: 'tf-run'
+  entrypoint: 'sh'
+  args:
+    - '-c'
+    - |
+      export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=$(cat /workspace/tf_sa)
 
-        echo "---------------------------------------------------------"
-        echo " PROYECTO:    $${TF_FOLDER}"
-        echo " IDENTIDAD:   $${GOOGLE_IMPERSONATE_SERVICE_ACCOUNT}"
-        echo " ACCION:      terraform $${TF_ACTION}"
-        echo "---------------------------------------------------------"
+      TF_ACTION=$(cat /workspace/tf_action)
+      TF_FOLDER=$(cat /workspace/tf_folder)
+      TF_PROJECT=$(cat /workspace/tf_project)
 
-        echo ">>> Iniciando Terraform en: $${TF_FOLDER}"
-        terraform init -input=false --upgrade > /dev/null
+      cd "$TF_FOLDER"
 
-        echo ">>> Validando configuracion (validate)..."
-        terraform validate
+      echo "---------------------------------------------------------"
+      echo " PROYECTO:    $TF_PROJECT"
+      echo " RUTA:        $TF_FOLDER"
+      echo " IDENTIDAD:   $GOOGLE_IMPERSONATE_SERVICE_ACCOUNT"
+      echo " ACCION:      terraform $TF_ACTION"
+      echo "---------------------------------------------------------"
 
-        # Definimos los flags extras: si es apply, agregamos -auto-approve
-        EXTRA_FLAGS=""
-        if [ "$${TF_ACTION}" == "apply" ]; then
-          EXTRA_FLAGS="-auto-approve"
-        fi
+      echo ">>> Iniciando Terraform..."
+      terraform init -input=false --upgrade > /dev/null
 
-        # Ejecución corregida
-        (terraform $${TF_ACTION} -no-color -input=false $${EXTRA_FLAGS} 2>&1) | tee /workspace/tf_result.log
+      echo ">>> Validando configuración..."
+      terraform validate
+
+      EXTRA_FLAGS=""
+      if [ "$TF_ACTION" == "apply" ]; then
+        EXTRA_FLAGS="-auto-approve"
+      fi
+
+      echo ">>> Ejecutando Terraform..."
+      (terraform $TF_ACTION -no-color -input=false $EXTRA_FLAGS 2>&1) | tee /workspace/tf_result.log
+
 
 # 3. Informe Final
-  - name: 'bash'
-    id: 'tf-summary'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        # Sincronización rápida
-        sleep 1
-        LOG_FILE="/workspace/tf_result.log"
+- name: 'bash'
+  id: 'tf-summary'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      sleep 1
+      LOG_FILE="/workspace/tf_result.log"
 
-        if [ ! -f "$$LOG_FILE" ]; then
-          echo "ERROR: No se genero el log de Terraform en $$LOG_FILE"
-          exit 1
-        fi
+      if [ ! -f "$LOG_FILE" ]; then
+        echo "ERROR: No se generó log de Terraform"
+        exit 1
+      fi
 
-        TF_ACTION=$$(cat /workspace/tf_action)
-        TF_TICKET=$$(cat /workspace/tf_ticket 2>/dev/null || echo "N/A")
-        TF_FOLDER=$$(cat /workspace/tf_folder)
-        
-        echo "========================================================="
-        echo "        INFORME DE EJECUCION: $${TF_TICKET}"
-        echo "========================================================="
-        echo " RUTA:    $${TF_FOLDER}"
-        echo " ACCION:  $${TF_ACTION}"
-        echo "---------------------------------------------------------"
+      TF_ACTION=$(cat /workspace/tf_action)
+      TF_FOLDER=$(cat /workspace/tf_folder)
+      TF_PROJECT=$(cat /workspace/tf_project)
 
-        # 1. Analizar Errores
-        if grep -qi "Error:" "$$LOG_FILE"; then
-          echo "ESTADO: FALLIDO"
-          echo "DETALLE:"
-          sed -n '/Error:/,$p' "$$LOG_FILE" | head -n 15
-          exit 1
-        fi
+      echo "========================================================="
+      echo "        INFORME DE EJECUCION"
+      echo "========================================================="
+      echo " PROYECTO: $TF_PROJECT"
+      echo " RUTA:     $TF_FOLDER"
+      echo " ACCION:   $TF_ACTION"
+      echo "---------------------------------------------------------"
 
-        # 2. Resumen de Cambios (Especial para tus módulos de buckets)
-        echo "CAMBIOS DETECTADOS:"
-        # Captura: "will be created", "Destroying...", "Creating...", etc.
-        grep -E "will be|Creating\.\.\.|Destroying\.\.\.|Modifying\.\.\." "$$LOG_FILE" \
-          | sed 's/will be//g' | sed 's/\.\.\.//g' | sed 's/^[[:space:]]*//' | sort -u || echo "No hay cambios pendientes."
+      # ❌ Errores
+      if grep -qi "Error:" "$LOG_FILE"; then
+        echo "ESTADO: FALLIDO"
+        echo "DETALLE:"
+        sed -n '/Error:/,$p' "$LOG_FILE" | head -n 15
+        exit 1
+      fi
 
-        echo "---------------------------------------------------------"
-        # 3. Resultado Final (La línea de Plan: o Apply complete!)
-        grep -E "Plan:|Apply complete!" "$$LOG_FILE" || echo "Operacion finalizada sin resumen."
-        echo "========================================================="
+      # 🔄 Cambios detectados
+      echo "CAMBIOS DETECTADOS:"
+      grep -E "will be|Creating\.\.\.|Destroying\.\.\.|Modifying\.\.\." "$LOG_FILE" \
+        | sed 's/will be//g' \
+        | sed 's/\.\.\.//g' \
+        | sed 's/^[[:space:]]*//' \
+        | sort -u || echo "No hay cambios pendientes."
+
+      echo "---------------------------------------------------------"
+
+      # 📊 Resultado final
+      grep -E "Plan:|Apply complete!" "$LOG_FILE" || echo "Operación finalizada."
+
+      echo "========================================================="
