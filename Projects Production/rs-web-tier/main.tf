@@ -88,19 +88,85 @@ module "vpc_routes" {
 }
 
 
-# module "composer_environments" {
-#   source   = "../../modules/composer"
-#   for_each = local.composer_data
+# module "composer" {
+#   source = "./modules/composer"
 
-#   # Valores dinámicos del JSON
-#   name       = each.key
-#   region     = each.value.region
-#   subnetwork = each.value.subnetwork
-#   env_size   = each.value.env_size
+#   name    = "composer-test-tf"
+#   region  = "us-central1"
+#   project = var.project
 
-#   # Valores fijos declarados directamente
-#   project         = "rs-web-tier"
-#   network         = "uc1-network-prod-001"
-#   service_account = "composer-worker-sa@rs-web-tier.iam.gserviceaccount.com"
-#   image_version   = "composer-3-airflow-2.10.2"
+#   enable_private_builds_only = false
+#   enable_private_environment = true
+#   environment_size           = "ENVIRONMENT_SIZE_SMALL"
+
+#   retention_mode = "RETENTION_MODE_DISABLED"
+
+#   maintenance_start_time = "2025-01-01T00:00:00Z"
+#   maintenance_end_time   = "2025-01-01T04:00:00Z"
+#   maintenance_recurrence = "FREQ=WEEKLY;BYDAY=SU"
+
+#   image_version           = "composer-3-airflow-2.9.3"
+#   env_variables           = {}
+#   pypi_packages           = {}
+#   web_server_plugins_mode = "PLUGINS_ENABLED" # evita edge cases
+#   data_lineage_enabled    = false
+
+#   allowed_ip_ranges = [
+#     {
+#       value       = "0.0.0.0/0"
+#       description = "test"
+#     }
+#   ]
+
+#   scheduler = {
+#     cpu        = 0.5
+#     memory_gb  = 2
+#     storage_gb = 1
+#     count      = 1
+#   }
+
+#   triggerer = {
+#     cpu       = 0.5
+#     memory_gb = 1
+#     count     = 1
+#   }
+
+#   dag_processor = {
+#     cpu        = 0.5
+#     memory_gb  = 2
+#     storage_gb = 1
+#     count      = 1
+#   }
+
+#   web_server = {
+#     cpu        = 0.5
+#     memory_gb  = 2
+#     storage_gb = 1
+#   }
+
+#   worker = {
+#     cpu        = 0.5
+#     memory_gb  = 2
+#     storage_gb = 1
+#     min_count  = 1
+#     max_count  = 1
+#   }
+
+#   network     = "projects/host-project/global/networks/default"
+#   subnetwork  = "projects/host-project/regions/us-central1/subnetworks/default"
+
+#   composer_internal_ipv4_cidr_block = "100.64.0.0/20"
+#   enable_ip_masq_agent              = false
+#   tags                              = []
+
+#   resilience_mode = "STANDARD_RESILIENCE"
+
+#   bucket = "my-composer-bucket-test-123"
+
+#   sa_account_id   = "composer-sa-test"
+#   sa_display_name = "Composer Test SA"
+
+#   composer_roles = [
+#     "roles/composer.worker"
+#   ]
 # }
