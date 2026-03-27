@@ -89,7 +89,7 @@ module "vpc_routes" {
 
 
 module "composer" {
-  source = "./modules/composer"
+  source = "../../modules/composer"
 
   name    = "composer-test"
   region  = "us-central1"
