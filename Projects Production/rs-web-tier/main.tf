@@ -161,7 +161,7 @@ module "composer" {
 
   resilience_mode = "STANDARD_RESILIENCE"
 
-  bucket = "composer-bucket-test-123"
+  bucket = "bucket_rs_webtier10i901283"
 
   sa_account_id   = "composer-sa-test"
   sa_display_name = "Composer Test SA"
