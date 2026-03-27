@@ -102,7 +102,7 @@ module "composer" {
   retention_mode = "RETENTION_MODE_DISABLED"
 
   maintenance_start_time = "2025-01-01T00:00:00Z"
-  maintenance_end_time   = "2025-01-01T04:00:00Z"
+  maintenance_end_time   = "2025-01-01T12:00:00Z"
   maintenance_recurrence = "FREQ=WEEKLY;BYDAY=SU"
 
   image_version           = "composer-3-airflow-2.9.3"
