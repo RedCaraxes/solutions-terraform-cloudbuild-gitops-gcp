@@ -1,103 +1,106 @@
-resource "google_composer_environment" "test" {
-  name   = "example-composer-env-tf-c3"
-  region = "us-central1"
-  project = "rs-web-tier"
+resource "google_composer_environment" "this" {
+  name    = var.name
+  region  = var.region
+  project = var.project
+
   config {
-    enable_private_builds_only = false
-    enable_private_environment = true
-    environment_size = "ENVIRONMENT_SIZE_SMALL"
+    enable_private_builds_only = var.enable_private_builds_only
+    enable_private_environment = var.enable_private_environment
+    environment_size           = var.environment_size
+
     data_retention_config {
       airflow_metadata_retention_config {
-        retention_mode = "RETENTION_MODE_DISABLED"
+        retention_mode = var.retention_mode
       }
     }
-    
+
     maintenance_window {
-      end_time   = "2025-12-15T09:00:00Z"
-      recurrence = "FREQ=WEEKLY;BYDAY=FR,SA,SU"
-      start_time = "2025-12-15T05:00:00Z"
+      start_time = var.maintenance_start_time
+      end_time   = var.maintenance_end_time
+      recurrence = var.maintenance_recurrence
     }
 
     software_config {
-      env_variables            = {} 
-      image_version            = "composer-3-airflow-2.9.3"
-      pypi_packages            = {} 
-      web_server_plugins_mode  = "ENABLED" 
+      image_version           = var.image_version
+      env_variables           = var.env_variables
+      pypi_packages           = var.pypi_packages
+      web_server_plugins_mode = var.web_server_plugins_mode
+
       cloud_data_lineage_integration {
-enabled = true 
-                }
+        enabled = var.data_lineage_enabled
+      }
     }
 
     web_server_network_access_control {
-      allowed_ip_range {
-        description = "Allows access from all IPv6 addresses (default value)"
-        value       = "0.0.0.0/0"
-                }
-      allowed_ip_range {
-                  description = "Allows access from all IPv6 addresses (default value)"
-                  value       = "::0/0"
-                }
-            }
+      dynamic "allowed_ip_range" {
+        for_each = var.allowed_ip_ranges
+        content {
+          value       = allowed_ip_range.value.value
+          description = allowed_ip_range.value.description
+        }
+      }
+    }
 
     workloads_config {
       scheduler {
-        cpu        = 0.5
-        memory_gb  = 2
-        storage_gb = 1
-        count      = 1
-      }
-      triggerer {
-        cpu        = 0.5
-        memory_gb  = 1
-        count      = 1
-      }
-      dag_processor {
-        cpu        = 1
-        memory_gb  = 2
-        storage_gb = 1
-        count      = 1
-      }
-      web_server {
-        cpu        = 0.5
-        memory_gb  = 2
-        storage_gb = 1
-      }
-      worker {
-        cpu = 0.5
-        memory_gb  = 2
-        storage_gb = 1
-        min_count  = 1
-        max_count  = 3
+        cpu        = var.scheduler.cpu
+        memory_gb  = var.scheduler.memory_gb
+        storage_gb = var.scheduler.storage_gb
+        count      = var.scheduler.count
       }
 
+      triggerer {
+        cpu       = var.triggerer.cpu
+        memory_gb = var.triggerer.memory_gb
+        count     = var.triggerer.count
+      }
+
+      dag_processor {
+        cpu        = var.dag_processor.cpu
+        memory_gb  = var.dag_processor.memory_gb
+        storage_gb = var.dag_processor.storage_gb
+        count      = var.dag_processor.count
+      }
+
+      web_server {
+        cpu        = var.web_server.cpu
+        memory_gb  = var.web_server.memory_gb
+        storage_gb = var.web_server.storage_gb
+      }
+
+      worker {
+        cpu        = var.worker.cpu
+        memory_gb  = var.worker.memory_gb
+        storage_gb = var.worker.storage_gb
+        min_count  = var.worker.min_count
+        max_count  = var.worker.max_count
+      }
     }
-    
 
     node_config {
-composer_internal_ipv4_cidr_block = "100.64.128.0/20"
-enable_ip_masq_agent              = false
-network                           = "projects/rs-prd-orgnet-host-net-83ba/global/networks/ue4-orgnet-prd-net-dev-vpc-001"
-service_account                   = "sa-nprd-dlk-dd-trsv-cc@rs-nprd-dlk-dd-trsv-ede4.iam.gserviceaccount.com"
-subnetwork                        = "projects/rs-prd-orgnet-host-net-83ba/regions/us-east4/subnetworks/ue4-orgnet-prd-net-dev-sbn-003"
-tags                              = []
-
-            }
-
-    resilience_mode = "STANDARD_RESILIENCE"
-
-    } 
-        storage_config {
-      bucket = "assaklj-asd54"
+      network                           = var.network
+      subnetwork                        = var.subnetwork
+      service_account                   = google_service_account.composer_sa.email
+      composer_internal_ipv4_cidr_block = var.composer_internal_ipv4_cidr_block
+      enable_ip_masq_agent              = var.enable_ip_masq_agent
+      tags                              = var.tags
     }
+
+    resilience_mode = var.resilience_mode
   }
 
-resource "google_service_account" "test" {
-  account_id   = "composer-env-account"
-  display_name = "Test Service Account for Composer Environment"
+  storage_config {
+    bucket = var.bucket
+  }
 }
 
-resource "google_project_iam_member" "composer-worker" {
-  project = "your-project-id"
-  role    = "roles/composer.worker"
-  member  = "serviceAccount:${google_service_account.test.email}"
+resource "google_service_account" "composer_sa" {
+  account_id   = var.sa_account_id
+  display_name = var.sa_display_name
+}
+
+resource "google_project_iam_member" "composer_worker" {
+  project = var.project
+  role    = var.composer_worker_role
+  member  = "serviceAccount:${google_service_account.composer_sa.email}"
 }
