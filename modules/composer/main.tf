@@ -94,13 +94,17 @@ resource "google_composer_environment" "this" {
   }
 }
 
+# 🔐 Service Account creada dentro del módulo
 resource "google_service_account" "composer_sa" {
   account_id   = var.sa_account_id
   display_name = var.sa_display_name
 }
 
-resource "google_project_iam_member" "composer_worker" {
+# 🔑 Roles dinámicos (correcto y flexible)
+resource "google_project_iam_member" "composer_roles" {
+  for_each = toset(var.composer_roles)
+
   project = var.project
-  role    = var.composer_worker_role
+  role    = each.value
   member  = "serviceAccount:${google_service_account.composer_sa.email}"
 }
