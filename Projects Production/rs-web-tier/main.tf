@@ -108,7 +108,7 @@ module "composer" {
   image_version           = "composer-3-airflow-2.9.3"
   env_variables           = {}
   pypi_packages           = {}
-  web_server_plugins_mode = "PLUGINS_ENABLED"
+  web_server_plugins_mode = "ENABLED"
   data_lineage_enabled    = false
 
   allowed_ip_ranges = [
@@ -155,7 +155,7 @@ module "composer" {
   network    = "projects/rs-web-tier/global/networks/uc1-orgnet-prd-net-dev-vpc-001"
   subnetwork = "projects/rs-web-tier/regions/us-central1/subnetworks/uc1-orgnet-prd-net-dev-sbn-002"
 
-  composer_internal_ipv4_cidr_block = "192.168.20.0/22"
+  composer_internal_ipv4_cidr_block = "100.64.0.0/20"
   enable_ip_masq_agent              = false
   tags                              = []
 
