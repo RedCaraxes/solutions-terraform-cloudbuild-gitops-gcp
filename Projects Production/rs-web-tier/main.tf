@@ -93,7 +93,7 @@ module "composer" {
 
   name    = "composer-test"
   region  = "us-central1"
-  project = "my-project-id"
+  project = "rs-web-tier"
 
   enable_private_builds_only = false
   enable_private_environment = true
