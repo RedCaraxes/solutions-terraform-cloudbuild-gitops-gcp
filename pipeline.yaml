@@ -1,0 +1,42 @@
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+# 1. Hola mundo
+- script: |
+    echo "Hola mundo 👋"
+  displayName: "Hello World"
+
+
+# 2. Ir a carpeta y ejecutar terraform plan
+- script: |
+    set -e
+
+    TF_FOLDER="solutions-terraform-cloudbuild-gitops-gcp/Projects Production/rs-web-tier"
+
+    echo "Entrando a: $TF_FOLDER"
+    cd "$TF_FOLDER"
+
+    echo "Inicializando Terraform..."
+    terraform init -input=false
+
+    echo "Ejecutando Terraform Plan..."
+    terraform plan -no-color | tee tfplan.log
+
+  displayName: "Terraform Plan"
+
+
+# 3. Mostrar resultados
+- script: |
+    echo "===== RESULTADO TERRAFORM ====="
+
+    if [ -f "solutions-terraform-cloudbuild-gitops-gcp/Projects Production/rs-web-tier/tfplan.log" ]; then
+      cat "solutions-terraform-cloudbuild-gitops-gcp/Projects Production/rs-web-tier/tfplan.log"
+    else
+      echo "No se encontró el log"
+    fi
+
+  displayName: "Mostrar Resultado"
