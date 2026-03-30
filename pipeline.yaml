@@ -1,7 +1,7 @@
 trigger: none
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: 'Default'
 
 steps:
 
@@ -40,4 +40,3 @@ steps:
     fi
 
   displayName: "Mostrar Resultado"
-  
