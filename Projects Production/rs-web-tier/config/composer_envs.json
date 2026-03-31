@@ -1,0 +1,12 @@
+{
+  "composer-prod-001": {
+    "region": "us-central1",
+    "subnetwork": "uc1-subnetwork-prod-001",
+    "env_size": "ENVIRONMENT_SIZE_SMALL"
+  },
+  "composer-dev-001": {
+    "region": "us-central1",
+    "subnetwork": "uc1-subnetwork-prod-002",
+    "env_size": "ENVIRONMENT_SIZE_SMALL"
+  }
+}
