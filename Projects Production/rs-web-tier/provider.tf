@@ -10,4 +10,4 @@ terraform {
 
 provider "google" {
   project = "${var.project}"
-  version = "~> 7.20"
+}
