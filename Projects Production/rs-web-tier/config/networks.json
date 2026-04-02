@@ -89,5 +89,47 @@
         "ip_cidr_range": "172.22.152.0/28"
       }
     }
+  },
+  "us4-orgnet-prd-net-prd-vpc-001": {
+    "auto_create_subnetworks": false,
+    "subnets": {
+      "us4-orgnet-prd-net-prd-sbn-001": {
+        "location": "us-east4",
+        "ip_cidr_range": "172.22.24.0/22"
+      },
+      "us4-orgnet-prd-net-prd-sbn-002": {
+        "location": "us-east4",
+        "ip_cidr_range": "172.22.28.0/22",
+        "secondary_ip_ranges": {
+        }
+      },
+      "us4-orgnet-prd-net-prd-sbn-003": {
+        "location": "us-east4",
+        "ip_cidr_range": "172.22.32.0/22",
+        "secondary_ip_ranges": {
+        }
+      },
+      "us4-orgnet-prd-net-prd-sbn-004": {
+        "location": "us-east4",
+        "ip_cidr_range": "172.22.36.0/22",
+        "secondary_ip_ranges": {
+        }
+      }
+    }
+  },
+  "us4-orgnet-prd-net-dev-vpc-001": {
+    "auto_create_subnetworks": false,
+    "subnets": {
+      "us4-orgnet-prd-net-dev-sbn-001": {
+        "location": "us-east4",
+        "ip_cidr_range": "172.22.40.0/22"
+      },
+      "us4-orgnet-prd-net-dev-sbn-002": {
+        "location": "us-east4",
+        "ip_cidr_range": "172.22.44.0/22",
+        "secondary_ip_ranges": {
+        }
+      }
+    }
   }
 }
