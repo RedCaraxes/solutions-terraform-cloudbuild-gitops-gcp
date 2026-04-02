@@ -1,0 +1,23 @@
+{
+  "us4-orgnet-prd-net-tr-vpc-001": {
+    "auto_create_subnetworks": false,
+    "subnets": {
+      "us4-orgnet-prd-net-tr-sbn-001": {
+        "location": "us-east4",
+        "ip_cidr_range": "172.18.254.0/27"
+      },
+      "us4-orgnet-prd-net-tr-sbn-002": {
+        "location": "us-east4",
+        "ip_cidr_range": "172.18.254.128/27",
+        "secondary_ip_ranges": {
+        }
+      },
+      "us4-orgnet-prd-net-tr-sbn-003": {
+        "location": "us-east4",
+        "ip_cidr_range": "172.19.0.0/27",
+        "secondary_ip_ranges": {
+        }
+      }
+    }
+  }
+}
